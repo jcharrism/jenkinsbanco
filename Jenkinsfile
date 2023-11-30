@@ -5,7 +5,7 @@ pipeline {
         stage('Build BAR') {
             steps {
                 bat """
-                    cd C:\Program Files\IBM\ACE\12.0.5.0
+                    cd C:\\Program Files\\IBM\\ACE\\12.0.5.0
                     dir
                 """
             }
