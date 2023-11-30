@@ -1,0 +1,102 @@
+BROKER SCHEMA com.bpd.core.util.security
+
+
+CREATE COMPUTE MODULE cryptograph_userPass
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+			
+		SET OutputRoot = InputRoot;
+		
+		DECLARE fieldPath 		REFERENCE TO Environment.Variables.ServiceName;
+		DECLARE ident 			REFERENCE TO Environment.Variables.{fieldPath}.cryptograph.Identificador;
+		DECLARE canal 			REFERENCE TO Environment.Variables.{fieldPath}.cryptograph.Canal;
+		DECLARE userEncryptPass REFERENCE TO Environment.Variables.{fieldPath}.cryptograph.userEncryptPass;
+		DECLARE llave 			REFERENCE TO Environment.Variables.{fieldPath}.cryptograph.llave;
+		
+		CacheCatalogAdKeyMutex: BEGIN ATOMIC -- beginning of atomic block. Processing is single threaded until the END; is reached
+			IF CacheCatalogInfo.{fieldPath}.cryptograph.valid IS NULL THEN
+				-- Invocar SP (Criptograma de Usuario)
+				DECLARE usuario, cripto, desc, indic CHARACTER;
+				DECLARE estado INTEGER;
+				CALL USPGETPARAMETROAUTENTICACION(ident, canal, usuario, cripto, estado, desc, indic);
+				SET CacheCatalogInfo.{fieldPath}.cryptograph.value = cripto;
+				SET CacheCatalogInfo.{fieldPath}.cryptograph.valid = TRUE;
+			END IF;
+		END CacheCatalogAdKeyMutex;
+			
+		-- Validamos si keyfile existe en cache, si existe se propaga mensaje a proceso de obtener parametros de autenticacion
+		-- sino existe se propaga a leer el archivo.
+		CacheCatalogKeyMutex: BEGIN ATOMIC -- beginning of atomic block. Processing is single threaded until the END; is reached
+			IF CacheCatalogInfo.{fieldPath}.cryptograph.keyfile.valid IS NULL THEN
+				SET CacheCatalogInfo.{fieldPath}.cryptograph.keyfile.key = CAST(Environment.Variables.Key AS CHARACTER CCSID 819);
+				SET CacheCatalogInfo.{fieldPath}.cryptograph.keyfile.valid = TRUE;
+			END IF;
+		END CacheCatalogKeyMutex;
+		
+		DECLARE serviceCryptograph REFERENCE TO Environment.Variables.{fieldPath};
+		SET serviceCryptograph.cryptograph.value	= CacheCatalogInfo.{fieldPath}.cryptograph.value;		
+		SET serviceCryptograph.cryptograph.key		= CacheCatalogInfo.{fieldPath}.cryptograph.keyfile.key;
+		
+		DECLARE iv REFERENCE TO Environment.Variables.{fieldPath}.cryptograph.iv;
+					
+		-- Descifrar criptograma
+		CacheCatalogAdmKeyMutex: BEGIN ATOMIC -- beginning of atomic block. Processing is single threaded until the END; is reached
+			IF CacheCatalogInfo.{fieldPath}.cryptograph.key2.valid IS NULL THEN
+				-- Descifrar llave
+				DECLARE key2 CHARACTER;
+				CALL recorreDecrypt(serviceCryptograph.cryptograph.key, iv, serviceCryptograph.cryptograph.value, key2);
+				SET CacheCatalogInfo.{fieldPath}.cryptograph.key2.value = key2;
+				SET CacheCatalogInfo.{fieldPath}.cryptograph.key2.valid = TRUE;
+			END IF;
+		END CacheCatalogAdmKeyMutex;
+				
+		DECLARE decryptText CHARACTER;
+		IF (llave = 'ENCRYPTED') THEN			
+			CALL recorreDecrypt(CacheCatalogInfo.{fieldPath}.cryptograph.key2.value, iv, userEncryptPass, decryptText);
+		END IF;
+		
+		SET serviceCryptograph.cryptograph.decryptText = decryptText;
+		
+		RETURN TRUE;
+	END;
+
+    CREATE PROCEDURE recorreDecrypt (IN key CHARACTER, IN iv CHARACTER,IN text CHARACTER,OUT resp CHARACTER)
+   		BEGIN
+   			
+   			DECLARE s12 NAMESPACE 'http://www.w3.org/2003/05/soap-envelope';
+   			DECLARE csif NAMESPACE 'http://www.cysce.com/csif-msg/ns/v1.0/csif-ms/';
+   			
+   			-- Validar desencriptado
+			DECLARE result CHARACTER decrypts(key,iv,text);
+			
+			-- Parse Data para construir la estructura y evaluar resultado del decrypts
+			DECLARE DATA_BLOB BLOB CAST(result AS BLOB CCSID 819);
+			CREATE FIELD Environment.Variables.ReturnMsg2;
+			DECLARE XMLTree REFERENCE TO Environment.Variables.ReturnMsg2;
+			CREATE LASTCHILD OF XMLTree DOMAIN('XMLNSC') PARSE(DATA_BLOB);
+		
+			--Validar si viene error
+			DECLARE rHeaderE REFERENCE TO XMLTree.XMLNSC.s12:Envelope.s12:Header.csif:Messaging.csif:ErrorList.csif:Error;
+			IF rHeaderE.errorCode = 'Success' THEN 
+				-- Success
+				SET resp = XMLTree.XMLNSC.s12:Envelope.s12:Body.encrypt;
+				DELETE FIELD Environment.Variables.ReturnMsg2;
+   			ELSE
+				-- Error
+				THROW USER EXCEPTION SEVERITY 3 MESSAGE 3012 VALUES(rHeaderE.shortDescription);
+			END IF;	
+   		END; 
+   		
+	CREATE FUNCTION decrypts(IN key CHAR, IN iv CHAR, IN encrypted CHAR)
+	RETURNS CHAR
+	LANGUAGE JAVA
+	EXTERNAL NAME "com.cysce.crypto.StringEncrypt.decrypts";
+	
+	CREATE PROCEDURE USPGETPARAMETROAUTENTICACION(IN v_identificador CHARACTER, IN v_canal CHARACTER, OUT v_usuario CHARACTER, OUT v_criptograma CHARACTER, OUT Status_Consulta INTEGER, OUT Descripcion CHARACTER, OUT v_IndicadorEncriptado CHARACTER)
+    LANGUAGE DATABASE
+    EXTERNAL NAME "ESBUTILITIESDEV.USPGETPARAMETROAUTENTICACION";
+
+END MODULE;
+	
+	
+    

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?><definitions xmlns="http://schemas.xmlsoap.org/wsdl/" name="EstadosService" targetNamespace="http://bpd.com.do/ProductosServicios/SaldoCuenta" xmlns:exc="http://bpd.com.do/comun/ESBException" xmlns:hdr="http://bpd.com.do/comun/ESBencabezado" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tar="http://bpd.com.do/xsd/ProductosServicios/SaldoCuenta" xmlns:tns="http://bpd.com.do/ProductosServicios/SaldoCuenta" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">
+  <documentation>
+    <appinfo source="WMQI_APPINFO">
+      <MRWSDLAppInfo imported="true">
+        <binding hasEncoding="false" imported="true" name="AccountQuerySOAP" originalBindingStyle="document"/>
+      </MRWSDLAppInfo>
+    </appinfo>
+  </documentation>
+  
+  <types>
+    <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://bpd.com.do/comun/ESBencabezado" xmlns:ibmSchExtn="http://www.ibm.com/schema/extensions" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+<xsd:include schemaLocation="service.xsd"/>
+</xsd:schema>
+    <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:ibmSchExtn="http://www.ibm.com/schema/extensions" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+<xsd:include schemaLocation="service_1.xsd"/>
+</xsd:schema>
+    <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://bpd.com.do/comun/ESBException" xmlns:ibmSchExtn="http://www.ibm.com/schema/extensions" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+<xsd:include schemaLocation="service_1_2.xsd"/>
+</xsd:schema>
+    <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://bpd.com.do/xsd/ProductosServicios/SaldoCuenta" xmlns:ibmSchExtn="http://www.ibm.com/schema/extensions" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+<xsd:include schemaLocation="service_1_2_3.xsd"/>
+</xsd:schema>
+  </types>
+  <message name="WSSecurityHeaderMessage">
+    <part element="wsse:Security" name="Security"/>
+  </message>
+  <message name="cabeceroReqMessage">
+    <part element="hdr:CabeceroReq" name="CabeceroReq"/>
+  </message>
+  <message name="cabeceroResMessage">
+    <part element="hdr:CabeceroRes" name="CabeceroRes"/>
+  </message>
+  <message name="ESBExcepcionMessage">
+    <part element="exc:ESBExcepcion" name="ESBExcepcion"/>
+  </message>
+  <message name="ConsultasSaldoCuentaReq">
+    <part element="tar:ConsultasSaldoCuentaReq" name="parameters"/>
+  </message>
+  <message name="ConsultasSaldoCuentaRes">
+    <part element="tar:ConsultasSaldoCuentaRes" name="parameters"/>
+  </message>
+  <message name="ObtenerTipoCuentaReq">
+    <part element="tar:ObtenerTipoCuentaReq" name="parameters"/>
+  </message>
+  <message name="ObtenerTipoCuentaRes">
+    <part element="tar:ObtenerTipoCuentaRes" name="parameters"/>
+  </message>
+  <portType name="AccountQuery">
+    <operation name="ConsultasSaldoCuenta">
+      <input message="tns:ConsultasSaldoCuentaReq"/>
+      <output message="tns:ConsultasSaldoCuentaRes"/>
+      <fault message="tns:ESBExcepcionMessage" name="error"/>
+    </operation>
+    <operation name="ObtenerTipoCuenta">
+      <input message="tns:ObtenerTipoCuentaReq"/>
+      <output message="tns:ObtenerTipoCuentaRes"/>
+      <fault message="tns:ESBExcepcionMessage" name="error"/>
+    </operation>
+  </portType>
+  <binding name="AccountQuerySOAP" type="tns:AccountQuery">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <operation name="ConsultasSaldoCuenta">
+      <soap:operation soapAction="ConsultasSaldoCuenta"/>
+      <input>
+        <soap:header message="tns:cabeceroReqMessage" part="CabeceroReq" use="literal"/>
+        <soap:header message="tns:WSSecurityHeaderMessage" part="Security" use="literal"/>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:header message="tns:cabeceroResMessage" part="CabeceroRes" use="literal"/>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="error">
+        <soap:header message="tns:cabeceroResMessage" part="CabeceroRes" use="literal"/>
+        <soap:fault name="error" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="ObtenerTipoCuenta">
+      <soap:operation soapAction="ConsultasSaldoCuenta"/>
+      <input>
+        <soap:header message="tns:cabeceroReqMessage" part="CabeceroReq" use="literal"/>
+        <soap:header message="tns:WSSecurityHeaderMessage" part="Security" use="literal"/>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:header message="tns:cabeceroResMessage" part="CabeceroRes" use="literal"/>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="error">
+        <soap:header message="tns:cabeceroResMessage" part="CabeceroRes" use="literal"/>
+        <soap:fault name="error" use="literal"/>
+      </fault>
+    </operation>
+  </binding>
+  <service name="AccountQuery">
+    <port binding="tns:AccountQuerySOAP" name="AccountQuerySOAP">
+      <soap:address location="http://10.96.36.224:7877/ProductosServicios/SaldoCuenta/service"/>
+    </port>
+  </service>
+</definitions>

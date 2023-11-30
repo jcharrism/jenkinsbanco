@@ -1,0 +1,108 @@
+BROKER SCHEMA com.bpd.intf.mq.consultaproductos.consultatarjetas
+
+CREATE COMPUTE MODULE ConsultaTarjetas_02_MapConsultaTarjetas
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		-- Declare namespaces
+		DECLARE s11 NAMESPACE 'http://schemas.xmlsoap.org/soap/envelope/';
+		DECLARE csif NAMESPACE 'http://www.cysce.com/csif-msg/ns/v1.0/csif-ms/';
+		DECLARE ns NAMESPACE 'http://bpd.com.do/xsd/ProductosServicios/SaldoCuenta';
+		DECLARE nssv NAMESPACE 'urn:bpd-com-do:service:ProductosServicios:ConsultaProductos:1.0';
+		DECLARE nsc NAMESPACE 'http://bpd.com.do/comun/ESBencabezado';
+
+		DECLARE MessageContex REFERENCE TO Environment.Variables.Context.MensajeOriginal;
+
+		SET OutputRoot.Properties = InputRoot.Properties;
+		SET OutputRoot.Properties.CodedCharSetId = MessageContex.Properties.CodedCharSetId;
+		SET OutputRoot.Properties.Encoding = MessageContex.Properties.Encoding;
+		SET OutputRoot.MQMD = InputRoot.MQMD;
+		SET OutputRoot.MQMD.MsgId = CAST(MessageContex.MQMD.CorrelId AS BLOB);
+		SET OutputRoot.MQMD.ReplyToQ = MessageContex.MQMD.ReplyToQ;
+		DELETE FIELD OutputRoot.MQMD.ReplyToQMgr;
+		SET OutputRoot.MQMD.Format = 'MQSTR  ';
+
+		CREATE FIELD OutputRoot.XMLNSC.MESSAGE TYPE Name;
+		DECLARE rBodyO REFERENCE TO OutputRoot.XMLNSC.MESSAGE;
+		DECLARE rBodyI REFERENCE TO InputRoot.XMLNSC.s11:Envelope.s11:Body.nssv:ConsultaProductosResponse;
+		DECLARE rHeader REFERENCE TO InputRoot.XMLNSC.s11:Envelope.s11:Header.csif:Messaging.csif:ErrorList;
+
+		IF (rHeader.csif:Error[1].errorCode = 'Success') THEN
+			SET rBodyO.(XMLNSC.Attribute)TYPE = MessageContex.XMLNSC.MESSAGE.TYPE;
+			SET rBodyO.(XMLNSC.Attribute)TRANSACTION = MessageContex.XMLNSC.MESSAGE.TRANSACTION;
+			SET rBodyO.(XMLNSC.Attribute)CORRELATIONID = MessageContex.XMLNSC.MESSAGE.CORRELATIONID;
+
+			CREATE FIELD rBodyO.LISTADOTARJETAS TYPE Name;
+			--GENERAR WHILE DE RESPUESTA
+			DECLARE I,J,K INTEGER 1;
+			DECLARE bDolar BOOLEAN FALSE;
+			DECLARE matriz,matriz1 REFERENCE TO rBodyI.ListaCuentas.Cuentas[1];
+			DECLARE tipoCuentaTarjeta CHARACTER Environment.Variables.Context.db.tipoCuenta; --HOMOLOGAR
+			DECLARE monedaLocal CHARACTER Environment.Variables.Context.db.monedaLocal;
+
+			/*SE REALIZA FILTRO TENIENDO EN CUENTA:
+			1- TIPO='Tarjeta de Credito Local'
+			2- monedaLocal = monedaLocal
+			3- monedaLocal y monedaExtranjera = monedaExtranjera
+			4- monedaExtranjera = nada
+			*/
+			WHILE LASTMOVE(matriz) DO
+				SET J = I;
+				-- valida tipo, que moneda sea moneda local y que no halla sido asignado
+				IF matriz.tipo=tipoCuentaTarjeta AND matriz.moneda=monedaLocal AND (NOT EXISTS(matriz.validador[])) THEN
+					DECLARE matriz1 REFERENCE TO rBodyI.ListaCuentas.Cuentas[J];
+					WHILE LASTMOVE(matriz1) DO
+						IF matriz1.numero=matriz.numero AND matriz1.moneda<>monedaLocal AND bDolar=FALSE THEN
+							SET rBodyO.LISTADOTARJETAS.{'TARJETA'||CAST(K AS CHARACTER)}.NUMERO =matriz1.numero;
+							SET rBodyO.LISTADOTARJETAS.{'TARJETA'||CAST(K AS CHARACTER)}.TIPOSALDO =matriz1.moneda;
+							SET matriz1.validador = TRUE;
+							SET K=K+1;
+							SET bDolar=TRUE;
+						END IF;
+						SET J = J + 1;
+						MOVE matriz1 NEXTSIBLING REPEAT NAME;
+					END WHILE;
+					IF bDolar=FALSE THEN
+						SET rBodyO.LISTADOTARJETAS.{'TARJETA'||CAST(K AS CHARACTER)}.NUMERO =matriz.numero;
+						SET rBodyO.LISTADOTARJETAS.{'TARJETA'||CAST(K AS CHARACTER)}.TIPOSALDO =matriz.moneda;
+						SET K=K+1;
+					ELSE
+						SET bDolar=FALSE;
+					END IF;
+					-- valida tipo, que moneda sea diferente a moneda local y que no halla sido asignado
+				ELSEIF matriz.tipo=tipoCuentaTarjeta AND matriz.moneda<>monedaLocal AND (NOT EXISTS(matriz.validador[])) THEN
+					DECLARE matriz1 REFERENCE TO rBodyI.ListaCuentas.Cuentas[J];
+					-- se hace recorrido pensando en que la moneda extranjera aparece primero y despues existe un registro de moneda local
+					WHILE LASTMOVE(matriz1) DO
+						IF matriz1.numero=matriz.numero AND matriz1.moneda=monedaLocal AND bDolar=FALSE THEN
+							SET rBodyO.LISTADOTARJETAS.{'TARJETA'||CAST(K AS CHARACTER)}.NUMERO =matriz.numero;
+							SET rBodyO.LISTADOTARJETAS.{'TARJETA'||CAST(K AS CHARACTER)}.TIPOSALDO =matriz.moneda;
+							SET matriz1.validador = TRUE;
+							SET K=K+1;
+							SET bDolar=TRUE;
+						END IF;
+						SET J = J + 1;
+						MOVE matriz1 NEXTSIBLING REPEAT NAME;
+					END WHILE;
+					SET bDolar=FALSE;
+				END IF;
+				SET I = I + 1;
+				MOVE matriz NEXTSIBLING REPEAT NAME;
+			END WHILE;
+		ELSE
+
+			SET rBodyO.(XMLNSC.Attribute)TYPE = '999';
+			SET rBodyO.(XMLNSC.Attribute)TRANSACTION = MessageContex.XMLNSC.MESSAGE.TRANSACTION;
+			SET rBodyO.(XMLNSC.Attribute)CORRELATIONID = MessageContex.XMLNSC.MESSAGE.CORRELATIONID;
+
+			SET rBodyO.(XMLNSC.Field)TRANSACTION = MessageContex.XMLNSC.MESSAGE.TRANSACTION;
+			SET rBodyO.SERVICIO = 'ConsultaTarjetas';
+			SET rBodyO.CODIGOERROR = FIELDVALUE(rHeader.csif:Error.errorCode);
+			SET rBodyO.DESCRIPCIONERROR = rHeader.csif:Error.csif:Description;
+			SET rBodyO.TARJETA = MessageContex.XMLNSC.MESSAGE.DOCUMENTO;
+
+		END IF;
+
+		RETURN TRUE;
+	END;
+
+END MODULE;

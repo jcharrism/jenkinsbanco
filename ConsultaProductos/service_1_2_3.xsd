@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://bpd.com.do/xsd/ProductosServicios/SaldoCuenta" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:ibmSchExtn="http://www.ibm.com/schema/extensions" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://bpd.com.do/xsd/ProductosServicios/SaldoCuenta" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <xsd:element ibmSchExtn:docRoot="true" name="ConsultasSaldoCuentaReq" nillable="false">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element maxOccurs="1" minOccurs="1" name="numeroDocumento" type="xsd:string"/>
+        <xsd:element maxOccurs="1" minOccurs="1" name="tipoDocumento" type="xsd:string"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element ibmSchExtn:docRoot="true" name="ConsultasSaldoCuentaRes" nillable="false">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element maxOccurs="1" minOccurs="0" name="aplicacionId" nillable="false" type="xsd:string"/>
+        <xsd:element maxOccurs="1" minOccurs="0" name="numeroCuenta" nillable="false" type="xsd:string"/>
+        <xsd:element maxOccurs="1" minOccurs="0" name="tipo" nillable="false" type="xsd:string"/>
+        <xsd:element maxOccurs="1" minOccurs="0" name="moneda" nillable="false" type="xsd:string"/>
+        <xsd:element maxOccurs="1" minOccurs="0" name="saldoActual" nillable="false" type="xsd:string"/>
+        <xsd:element maxOccurs="1" minOccurs="0" name="saldoDisponsible" nillable="false" type="xsd:string"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element ibmSchExtn:docRoot="true" name="ObtenerTipoCuentaReq" nillable="false">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element maxOccurs="1" minOccurs="1" name="numeroDocumento" type="xsd:string"/>
+        <xsd:element maxOccurs="1" minOccurs="1" name="tipoDocumento" type="xsd:string"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element ibmSchExtn:docRoot="true" name="ObtenerTipoCuentaRes" nillable="false">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element maxOccurs="1" minOccurs="0" name="codigoRetorno" nillable="false" type="xsd:string"/>
+        <xsd:element maxOccurs="1" minOccurs="0" name="nombre" type="xsd:string"/>
+        <xsd:element maxOccurs="1" minOccurs="0" name="clienteTipo" type="xsd:string"/>
+        <xsd:element maxOccurs="1" minOccurs="0" name="orgNombre" type="xsd:string"/>
+        <xsd:element maxOccurs="1" minOccurs="0" name="clienteSegmento" type="xsd:string"/>
+        <xsd:element maxOccurs="1" minOccurs="0" name="email" type="xsd:string"/>
+        <xsd:element maxOccurs="1" minOccurs="0" name="telefono1" type="xsd:string"/>
+        <xsd:element maxOccurs="1" minOccurs="0" name="telefono2" type="xsd:string"/>
+        <xsd:element maxOccurs="unbounded" minOccurs="0" ref="tns:ListaCuentas"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="ListaCuentas">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element maxOccurs="unbounded" minOccurs="0" ref="tns:Cuentas"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="Cuentas">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element maxOccurs="1" minOccurs="1" name="tipo" type="xsd:string"/>
+        <xsd:element maxOccurs="1" minOccurs="1" name="subtipo" type="xsd:string"/>
+        <xsd:element maxOccurs="1" minOccurs="1" name="numero" type="xsd:string"/>
+        <xsd:element maxOccurs="1" minOccurs="1" name="moneda" type="xsd:string"/>
+        <xsd:element maxOccurs="1" minOccurs="1" name="saldoActual" nillable="false" type="xsd:string"/>
+        <xsd:element maxOccurs="1" minOccurs="0" name="saldoDisponsible" nillable="false" type="xsd:string"/>
+        <xsd:element maxOccurs="1" minOccurs="0" name="ultimoCorte" type="xsd:string"/>
+        <xsd:element maxOccurs="1" minOccurs="0" name="fechaUltimoCorte" type="xsd:string"/>
+        <xsd:element maxOccurs="1" minOccurs="0" name="balanceTransitos" type="xsd:string"/>
+        <xsd:element maxOccurs="1" minOccurs="0" name="alias" nillable="false" type="xsd:string"/>
+        <xsd:element maxOccurs="1" minOccurs="0" name="sePermiteTransaccion" nillable="false" type="xsd:string"/>
+        <xsd:element maxOccurs="1" minOccurs="0" name="esProductoAdicional" nillable="false" type="xsd:string"/>
+        <xsd:element maxOccurs="1" minOccurs="0" name="relacion" nillable="false" type="xsd:string"/>
+        <xsd:element maxOccurs="1" minOccurs="1" name="isVisible" nillable="false" type="xsd:string"/>
+        <xsd:element maxOccurs="1" minOccurs="0" name="interesGanadoNoPagado" type="xsd:string"/>
+        <xsd:element maxOccurs="1" minOccurs="0" name="tasaDeInteres" type="xsd:string"/>
+        <xsd:element maxOccurs="1" minOccurs="0" name="fechaPagoProximoInteres" type="xsd:string"/>
+        <xsd:element maxOccurs="1" minOccurs="0" name="numeroDeProducto" type="xsd:string"/>
+        <xsd:element maxOccurs="1" minOccurs="0" name="tasaDeInteresVigente" type="xsd:string"/>
+        <xsd:element maxOccurs="1" minOccurs="0" name="noCuentaPreveePaga" type="xsd:string"/>
+        <xsd:element maxOccurs="1" minOccurs="0" name="desembolsoEnable" type="xsd:string"/>
+        <xsd:element maxOccurs="1" minOccurs="0" name="montoDelPrestamo" type="xsd:string"/>
+        <xsd:element maxOccurs="1" minOccurs="0" name="limiteCredito" type="xsd:string"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+</xsd:schema>

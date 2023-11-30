@@ -1,0 +1,49 @@
+BROKER SCHEMA com.bpd.core.util.exception
+
+
+CREATE COMPUTE MODULE CH_TC_MQ_BuildFault_Compute
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		SET OutputRoot.Properties = InputRoot.Properties;
+		SET OutputRoot.Properties.CodedCharSetId = Environment.Variables.CCSID;
+		SET OutputRoot.MQMD = InputRoot.MQMD;
+		SET OutputRoot.MQMD.MsgId = InputRoot.MQMD.CorrelId;
+		
+		DECLARE rExceptionList REFERENCE TO InputExceptionList;
+		CREATE FIELD Environment.exceptions TYPE Name;
+		DECLARE rEnvironment REFERENCE TO Environment.exceptions;
+		
+		CALL com.cysce.core.util.exception.AddExceptionData( rExceptionList, rEnvironment );
+		
+		DECLARE rHeader REFERENCE TO InputRoot.XMLNSC.MESSAGE;
+		CREATE FIELD OutputRoot.XMLNSC.MESSAGE TYPE Name;
+		DECLARE rBodyO REFERENCE TO OutputRoot.XMLNSC.MESSAGE;			
+		SET rBodyO.(XMLNSC.Attribute)TYPE 		= 'RS';
+		
+		SET rBodyO.SERVICE			= COALESCE(rHeader.SERVICE,'');
+		SET rBodyO.CHANEL 			= COALESCE(rHeader.CHANEL,'');
+		SET rBodyO.CODIGOERROR		= COALESCE(rHeader.SERVERSOURCE,'');
+		SET rBodyO.DESCRIPCIONERROR = COALESCE(rHeader.SERVICESOURCE,'');
+
+		
+		IF (rEnvironment.exception[<].number = 5026 OR rEnvironment.exception[<].number = 5004) THEN
+			SET rBodyO.CODIGOERROR			= '9901';
+			-- Obtiene nombre de tag para excepciones (Tags requeridos)
+			DECLARE posicion INT POSITION('"' IN rEnvironment.exception[<].inserts);
+			DECLARE tagXML CHARACTER SUBSTRING(rEnvironment.exception[<].inserts FROM posicion+1);
+			SET posicion = POSITION('"' IN tagXML);
+			SET tagXML   = SUBSTRING(tagXML FROM 1 FOR (posicion-1));
+			
+			SET rBodyO.DESCRIPCIONERROR 	= 'Data Invalida - '||tagXML;
+		ELSE
+			SET rBodyO.CODIGOERROR 		= rEnvironment.exception[<].number;
+			SET rBodyO.DESCRIPCIONERROR 	= rEnvironment.exception[<].text;
+		END IF;
+		
+		IF (rEnvironment.exception[<].exceptionType = 'UserException') THEN
+			SET rBodyO.DESCRIPCIONERROR 	= rEnvironment.exception[<].text;
+		END IF;
+		
+		RETURN TRUE;
+	END;
+END MODULE;

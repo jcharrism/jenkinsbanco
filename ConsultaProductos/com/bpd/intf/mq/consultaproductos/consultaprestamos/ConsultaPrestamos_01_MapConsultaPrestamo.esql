@@ -1,0 +1,58 @@
+BROKER SCHEMA com.bpd.intf.mq.consultaproductos.consultaprestamos
+DECLARE CacheCatalogInfo SHARED ROW; -- a shared variable that can be used by instances of a flow
+
+CREATE COMPUTE MODULE ConsultaPrestamos_01_MapConsultaPrestamo
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		-- Declare namespaces
+		DECLARE s11 NAMESPACE 'http://schemas.xmlsoap.org/soap/envelope/';
+		DECLARE csif NAMESPACE 'http://www.cysce.com/csif-msg/ns/v1.0/csif-ms/';
+		DECLARE ns NAMESPACE 'http://bpd.com.do/xsd/ProductosServicios/SaldoCuenta';
+		DECLARE nssv NAMESPACE 'urn:bpd-com-do:service:ProductosServicios:ConsultaProductos:1.0';
+		DECLARE nsc NAMESPACE 'http://bpd.com.do/comun/ESBencabezado';
+
+		SET OutputRoot.Properties = InputRoot.Properties;
+		-- Consultar en BD los parametros del servicio
+		DECLARE component CHARACTER 'ConsultaProductos';
+		CacheCatalogInfoMutex: BEGIN ATOMIC -- beginning of atomic block. Processing is single threaded until the END; is reached
+			IF CacheCatalogInfo.ConsultaProductos.valid IS NULL THEN
+				CREATE FIELD Environment.Variables TYPE Name;
+				DECLARE rEnvironment REFERENCE TO Environment.Variables;
+				-- Invocar SP
+				CALL getParameters(component, rEnvironment.resultSet[]);
+				SET CacheCatalogInfo.ConsultaProductos.ServiceInvocationData[] = rEnvironment.resultSet[];
+				SET CacheCatalogInfo.ConsultaProductos.valid = TRUE;
+			END IF;
+		END CacheCatalogInfoMutex;
+
+		DECLARE canal CHARACTER THE (SELECT ITEM F1.VALUE FROM CacheCatalogInfo.ConsultaProductos.ServiceInvocationData[] AS F1 WHERE F1.NAME = 'CANAL_PRESTAMOS');
+		DECLARE tipoCuenta CHARACTER THE (SELECT ITEM F1.VALUE FROM CacheCatalogInfo.ConsultaProductos.ServiceInvocationData[] AS F1 WHERE F1.NAME = 'TIPOCUENTAPRESTAMO');
+		DECLARE monedaLocal CHARACTER THE (SELECT ITEM F1.VALUE FROM CacheCatalogInfo.ConsultaProductos.ServiceInvocationData[] AS F1 WHERE F1.NAME = 'MONEDALOCAL');
+
+		SET Environment.Variables.Context.db.tipoCuenta = tipoCuenta;
+		SET Environment.Variables.Context.db.monedaLocal = monedaLocal;
+		-- Construir Header CSIF
+		SET OutputRoot.XMLNSC.s11:Envelope.s11:Header.csif:Messaging = Environment.csif:Messaging;
+		-- Construir Header Servicio
+		SET OutputRoot.XMLNSC.s11:Envelope.s11:Header.nsc:CabeceroReq.servicio ='ConsultaProductos"';
+		SET OutputRoot.XMLNSC.s11:Envelope.s11:Header.nsc:CabeceroReq.operacion ='ConsultaPrestamos';
+		SET OutputRoot.XMLNSC.s11:Envelope.s11:Header.nsc:CabeceroReq.canal = canal;
+		-- Construir Body del servicio
+		CREATE FIELD OutputRoot.XMLNSC.s11:Envelope.s11:Body.nssv:ConsultaProductosRequest TYPE Name;
+		DECLARE rConsultaPrestamos REFERENCE TO OutputRoot.XMLNSC.s11:Envelope.s11:Body.nssv:ConsultaProductosRequest;
+		DECLARE rBodyI REFERENCE TO InputRoot.XMLNSC.MESSAGE;        
+
+		SET rConsultaPrestamos.numeroDocumento = rBodyI.DOCUMENTO;
+		SET rConsultaPrestamos.tipoDocumento = rBodyI.TIPODOCUMENTO;
+
+		SET Environment.Variables.Context.MensajeOriginal = InputRoot;
+
+		RETURN TRUE;
+	END;
+
+	CREATE PROCEDURE getParameters(IN P1 CHAR)
+	LANGUAGE DATABASE
+	DYNAMIC RESULT SETS 1
+	EXTERNAL NAME "BITACORASB.getParameters";
+
+END MODULE;

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ComIbmCompute.msgnode="ComIbmCompute.msgnode" xmlns:ComIbmMQInput.msgnode="ComIbmMQInput.msgnode" xmlns:ComIbmMQReply.msgnode="ComIbmMQReply.msgnode" xmlns:ComIbmSOAPRequest.msgnode="ComIbmSOAPRequest.msgnode" xmlns:ComIbmTrace.msgnode="ComIbmTrace.msgnode" xmlns:com_bpd_core_util_logger_Log.subflow="com/bpd/core/util/logger/Log.subflow" xmlns:com_cysce_core_util_exception_ExceptionHandler.subflow="com/cysce/core/util/exception/ExceptionHandler.subflow"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:eflow="http://www.ibm.com/wbi/2005/eflow" xmlns:utility="http://www.ibm.com/wbi/2005/eflow_utility" nsURI="com/bpd/sv/consultaproductos/ConsultaProductos_01.msgflow" nsPrefix="com_bpd_sv_consultaproductos_ConsultaProductos_01.msgflow">
+  <eClassifiers xmi:type="eflow:FCMComposite" name="FCMComposite_1">
+    <eSuperTypes href="http://www.ibm.com/wbi/2005/eflow#//FCMBlock"/>
+    <translation xmi:type="utility:TranslatableString" key="ConsultaProductos_01" bundleName="com/bpd/sv/consultaproductos/ConsultaProductos_01" pluginId="ConsultaProductos"/>
+    <colorGraphic16 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/ConsultaProductos/icons/full/obj16/ConsultaProductos_01.gif"/>
+    <colorGraphic32 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/ConsultaProductos/icons/full/obj30/ConsultaProductos_01.gif"/>
+    <composition>
+      <nodes xmi:type="com_cysce_core_util_exception_ExceptionHandler.subflow:FCMComposite_1" xmi:id="FCMComposite_1_1" location="554,252">
+        <translation xmi:type="utility:ConstantString" string="ExceptionHandler"/>
+      </nodes>
+      <nodes xmi:type="ComIbmMQInput.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_2" location="26,139" queueName="CONSULTAPRODUCTOS.01" messageDomainProperty="XMLNSC">
+        <translation xmi:type="utility:ConstantString" string="CONSULTAPRODUCTOS.01"/>
+      </nodes>
+      <nodes xmi:type="ComIbmTrace.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_3" location="213,71" destination="localError" pattern="Current Timestamp: ${CURRENT_TIMESTAMP}&#xD;&#xA;Broker: ${BrokerName}  Version: ${BrokerVersion}  Platform: ${Family}&#xD;&#xA;ProcessID: ${ProcessId}  BrokerUserId: ${BrokerUserId}&#xD;&#xA;ExecutionGroupLabel: ${ExecutionGroupLabel}&#xD;&#xA;Root: ${Root}&#xD;&#xA;Environment: ${Environment}&#xD;&#xA;ExceptionList: ${ExceptionList}">
+        <translation xmi:type="utility:ConstantString" string="Trace"/>
+      </nodes>
+      <nodes xmi:type="com_bpd_core_util_logger_Log.subflow:FCMComposite_1" xmi:id="FCMComposite_1_5" location="330,140" messageType="SOAP" componentType="WS">
+        <translation xmi:type="utility:ConstantString" string="Log"/>
+      </nodes>
+      <nodes xmi:type="ComIbmSOAPRequest.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_6" location="436,140" wsdlFileName="service_1.wsdl" selectedPortType="AccountQuery" selectedBinding="AccountQuerySOAP" selectedOperation="ObtenerTipoCuenta" selectedPort="AccountQuerySOAP" targetNamespace="http://bpd.com.do/ProductosServicios/SaldoCuenta" useHTTPTransport="true" webServiceURL="http://10.96.36.224:7851/ProductosServicios/SaldoCuenta/service" sslProtocol="TLS" parserXmlnscBuildTreeUsingXMLSchema="false"
+          validateMaster="none">
+        <translation xmi:type="utility:ConstantString" string="SOAP Request"/>
+        <mustUnderstandResponseHeadersWSDLDefined header="cabeceroResMessage" namespace="http://bpd.com.do/comun/ESBencabezado"/>
+      </nodes>
+      <nodes xmi:type="com_bpd_core_util_logger_Log.subflow:FCMComposite_1" xmi:id="FCMComposite_1_7" location="532,140" messageType="SOAP" componentType="WS">
+        <translation xmi:type="utility:ConstantString" string="Log1"/>
+      </nodes>
+      <nodes xmi:type="ComIbmMQReply.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_9" location="751,141">
+        <translation xmi:type="utility:ConstantString" string="MQ Reply"/>
+      </nodes>
+      <nodes xmi:type="ComIbmCompute.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_12" location="197,139" dataSource="BITACORAESB" computeExpression="esql://routine/com.bpd.sv.consultaproductos#ConsultaProductos_01_TransformRequest.Main" computeMode="destinationAndMessage">
+        <translation xmi:type="utility:ConstantString" string="TransformRequest"/>
+      </nodes>
+      <nodes xmi:type="ComIbmCompute.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_13" location="592,140" computeExpression="esql://routine/com.bpd.sv.consultaproductos#ConsultaProductos_01_TransformResponse.Main">
+        <translation xmi:type="utility:ConstantString" string="TransformResponse"/>
+      </nodes>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_2" targetNode="FCMComposite_1_1" sourceNode="FCMComposite_1_2" sourceTerminalName="OutTerminal.catch" targetTerminalName="InTerminal.Input">
+        <bendPoints>19,104,-346,-11</bendPoints>
+      </connections>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_3" targetNode="FCMComposite_1_9" sourceNode="FCMComposite_1_1" sourceTerminalName="OutTerminal.Output" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_4" targetNode="FCMComposite_1_7" sourceNode="FCMComposite_1_6" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.Input"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_5" targetNode="FCMComposite_1_1" sourceNode="FCMComposite_1_6" sourceTerminalName="OutTerminal.failure" targetTerminalName="InTerminal.Input"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_8" targetNode="FCMComposite_1_3" sourceNode="FCMComposite_1_2" sourceTerminalName="OutTerminal.failure" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_9" targetNode="FCMComposite_1_7" sourceNode="FCMComposite_1_6" sourceTerminalName="OutTerminal.fault" targetTerminalName="InTerminal.Input">
+        <bendPoints>52,0,-34,0</bendPoints>
+      </connections>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_11" targetNode="FCMComposite_1_6" sourceNode="FCMComposite_1_5" sourceTerminalName="OutTerminal.Output" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_12" targetNode="FCMComposite_1_12" sourceNode="FCMComposite_1_2" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_13" targetNode="FCMComposite_1_5" sourceNode="FCMComposite_1_12" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.Input"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_14" targetNode="FCMComposite_1_13" sourceNode="FCMComposite_1_7" sourceTerminalName="OutTerminal.Output" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_15" targetNode="FCMComposite_1_9" sourceNode="FCMComposite_1_13" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+    </composition>
+    <propertyOrganizer/>
+    <stickyBoard/>
+  </eClassifiers>
+</ecore:EPackage>

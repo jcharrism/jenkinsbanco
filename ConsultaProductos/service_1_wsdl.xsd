@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?><schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://bpd.com.do/ProductosServicios/SaldoCuenta" xmlns:exc="http://bpd.com.do/comun/ESBException" xmlns:hdr="http://bpd.com.do/comun/ESBencabezado" xmlns:tar="http://bpd.com.do/xsd/ProductosServicios/SaldoCuenta" xmlns:tns="http://bpd.com.do/ProductosServicios/SaldoCuenta" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">
+  <import namespace="http://bpd.com.do/xsd/ProductosServicios/SaldoCuenta" schemaLocation="service_1_2_3.xsd"/>
+  <import namespace="http://bpd.com.do/comun/ESBException" schemaLocation="service_1_2.xsd"/>
+  <import namespace="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" schemaLocation="service_1.xsd"/>
+  <import namespace="http://bpd.com.do/comun/ESBencabezado" schemaLocation="service.xsd"/>
+
+<!-- BEGIN Global group petaining to all wsdl:message definitions -->
+<!-- END Global group -->
+
+
+<!-- BEGIN Message Definitions for the wsdl:operations  -->
+<!-- END Message Definitions -->
+
+
+</schema>

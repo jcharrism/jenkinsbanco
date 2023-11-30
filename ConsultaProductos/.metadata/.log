@@ -1,0 +1,236 @@
+!SESSION 2023-11-22 10:41:37.961 -----------------------------------------------
+eclipse.buildId=4.15.0.2020042
+java.fullversion=8.0.7.5 - pwa6480sr7fp5ifix-20220310_01(SR7 FP5+IJ37785)
+JRE 1.8.0 Windows 11 amd64-64-Bit Compressed References 20220104_19630 (JIT enabled, AOT enabled)
+OpenJ9   - 2d4c7d9
+OMR      - 59845b7
+IBM      - 3c151c1
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=es_ES
+Framework arguments:  -showlocation -product com.ibm.etools.msgbroker.tooling.ide tools_auto -showlocation -product com.ibm.etools.msgbroker.tooling.ide
+Command-line arguments:  -data C:\ConsultaProductos -os win32 -ws win32 -arch x86_64 -showlocation -product com.ibm.etools.msgbroker.tooling.ide tools_auto -showlocation -product com.ibm.etools.msgbroker.tooling.ide
+
+!ENTRY org.eclipse.emf.ecore 2 0 2023-11-22 10:41:39.399
+!MESSAGE Both 'com.ibm.etools.mft.fcb' and 'com.ibm.etools.mft.gef.emf' register a package for 'http://www.ibm.com/wbi/2005/eflow_utility'
+
+!ENTRY org.eclipse.emf.ecore 2 0 2023-11-22 10:41:39.399
+!MESSAGE Both 'com.ibm.etools.mft.gef.emf' and 'com.ibm.etools.mft.gef.emf' register a package for 'http://www.ibm.com/wbi/2005/eflow_utility'
+
+!ENTRY org.eclipse.emf.ecore 2 0 2023-11-22 10:41:39.400
+!MESSAGE Both 'com.ibm.etools.mft.fcb' and 'com.ibm.etools.mft.pattern.capture.annotation' register a package for 'http://www.ibm.com/patternAnnotation/2010'
+
+!ENTRY org.eclipse.emf.ecore 2 0 2023-11-22 10:41:39.401
+!MESSAGE Both 'com.ibm.etools.mft.gef.emf' and 'org.eclipse.emf.ecore' register a package for 'http://www.eclipse.org/emf/2002/Ecore'
+
+!ENTRY org.eclipse.emf.ecore 2 0 2023-11-22 10:41:39.407
+!MESSAGE Both 'com.ibm.etools.javaee.core' and 'com.ibm.etools.mft.service.model' register an extension parser for 'application'
+
+!ENTRY org.eclipse.ui 2 2 2023-11-22 10:41:41.558
+!MESSAGE Invalid preference category path: com.ibm.importer.preferences (bundle: com.ibm.adapter.c, page: com.ibm.adapter.c.ui.preferencepage.CPreferencePage)
+
+!ENTRY org.eclipse.ui 2 2 2023-11-22 10:41:41.559
+!MESSAGE Invalid preference category path: com.ibm.importer.preferences (bundle: com.ibm.etools.cobol.preference.ui, page: com.ibm.etools.cobol.preference.ui.preferencepage.CobolPreferencePage)
+
+!ENTRY org.eclipse.ui 2 2 2023-11-22 10:41:41.559
+!MESSAGE Invalid preference category path: com.ibm.debug.breakpoints.common.pref.tracepoint (bundle: com.ibm.debug.wsa, page: com.ibm.debug.wsa.WSATracepointPreferencePage)
+
+!ENTRY org.eclipse.jface.text 2 0 2023-11-22 10:41:43.501
+!MESSAGE Duplicate template id: 'com.ibm.datatools.sqlxeditor.templates.xmlnamespaces2'
+
+!ENTRY org.eclipse.egit.ui 2 0 2023-11-22 10:41:44.056
+!MESSAGE Warning: The environment variable HOME is not set. The following directory will be used to store the Git
+user global configuration and to define the default location to store repositories: 'C:\Users\jcharris'. If this is
+not correct please set the HOME environment variable and restart Eclipse. Otherwise Git for Windows and
+EGit might behave differently since they see different configuration options.
+This warning can be switched off on the Team > Git > Confirmations and Warnings preference page.
+
+!ENTRY com.ibm.etools.mft.pattern.community 4 0 2023-11-22 10:41:45.013
+!MESSAGE Connection to the URL https://ot4i.github.io/ace-patterns/es/repo_metadata.json failed. Response code: 404
+
+!ENTRY com.ibm.mq.runtime 1 0 2023-11-22 10:41:45.171
+!MESSAGE 
+
+!ENTRY com.ibm.mq.runtime 1 0 2023-11-22 10:41:45.172
+!MESSAGE C:\Program Files\IBM\ACE\12.0.5.0\tools>mqsifindmqpath
+
+!ENTRY com.ibm.mq.runtime 1 0 2023-11-22 10:41:45.726
+!MESSAGE BIP8100I: No se ha podido detectar una instalación de IBM MQ 
+
+!ENTRY com.ibm.mq.runtime 4 0 2023-11-22 10:41:45.739
+!MESSAGE WebSphere MQ install location is not found.
+!SESSION 2023-11-22 10:45:35.258 -----------------------------------------------
+eclipse.buildId=4.15.0.2020042
+java.fullversion=8.0.7.5 - pwa6480sr7fp5ifix-20220310_01(SR7 FP5+IJ37785)
+JRE 1.8.0 Windows 11 amd64-64-Bit Compressed References 20220104_19630 (JIT enabled, AOT enabled)
+OpenJ9   - 2d4c7d9
+OMR      - 59845b7
+IBM      - 3c151c1
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=es_ES
+Framework arguments:  -showlocation -product com.ibm.etools.msgbroker.tooling.ide tools_auto -showlocation -product com.ibm.etools.msgbroker.tooling.ide
+Command-line arguments:  -data file:/C:/ConsultaProductos/ -os win32 -ws win32 -arch x86_64 -showlocation -product com.ibm.etools.msgbroker.tooling.ide tools_auto -showlocation -product com.ibm.etools.msgbroker.tooling.ide
+
+!ENTRY org.eclipse.emf.ecore 2 0 2023-11-22 10:45:36.419
+!MESSAGE Both 'com.ibm.etools.mft.fcb' and 'com.ibm.etools.mft.gef.emf' register a package for 'http://www.ibm.com/wbi/2005/eflow_utility'
+
+!ENTRY org.eclipse.emf.ecore 2 0 2023-11-22 10:45:36.420
+!MESSAGE Both 'com.ibm.etools.mft.gef.emf' and 'com.ibm.etools.mft.gef.emf' register a package for 'http://www.ibm.com/wbi/2005/eflow_utility'
+
+!ENTRY org.eclipse.emf.ecore 2 0 2023-11-22 10:45:36.420
+!MESSAGE Both 'com.ibm.etools.mft.fcb' and 'com.ibm.etools.mft.pattern.capture.annotation' register a package for 'http://www.ibm.com/patternAnnotation/2010'
+
+!ENTRY org.eclipse.emf.ecore 2 0 2023-11-22 10:45:36.422
+!MESSAGE Both 'com.ibm.etools.mft.gef.emf' and 'org.eclipse.emf.ecore' register a package for 'http://www.eclipse.org/emf/2002/Ecore'
+
+!ENTRY org.eclipse.emf.ecore 2 0 2023-11-22 10:45:36.431
+!MESSAGE Both 'com.ibm.etools.javaee.core' and 'com.ibm.etools.mft.service.model' register an extension parser for 'application'
+
+!ENTRY org.eclipse.ui 2 2 2023-11-22 10:45:37.792
+!MESSAGE Invalid preference category path: com.ibm.importer.preferences (bundle: com.ibm.adapter.c, page: com.ibm.adapter.c.ui.preferencepage.CPreferencePage)
+
+!ENTRY org.eclipse.ui 2 2 2023-11-22 10:45:37.793
+!MESSAGE Invalid preference category path: com.ibm.importer.preferences (bundle: com.ibm.etools.cobol.preference.ui, page: com.ibm.etools.cobol.preference.ui.preferencepage.CobolPreferencePage)
+
+!ENTRY org.eclipse.ui 2 2 2023-11-22 10:45:37.793
+!MESSAGE Invalid preference category path: com.ibm.debug.breakpoints.common.pref.tracepoint (bundle: com.ibm.debug.wsa, page: com.ibm.debug.wsa.WSATracepointPreferencePage)
+
+!ENTRY org.eclipse.jface.text 2 0 2023-11-22 10:45:38.837
+!MESSAGE Duplicate template id: 'com.ibm.datatools.sqlxeditor.templates.xmlnamespaces2'
+
+!ENTRY org.eclipse.egit.ui 2 0 2023-11-22 10:45:38.847
+!MESSAGE Warning: The environment variable HOME is not set. The following directory will be used to store the Git
+user global configuration and to define the default location to store repositories: 'C:\Users\jcharris'. If this is
+not correct please set the HOME environment variable and restart Eclipse. Otherwise Git for Windows and
+EGit might behave differently since they see different configuration options.
+This warning can be switched off on the Team > Git > Confirmations and Warnings preference page.
+
+!ENTRY com.ibm.mq.runtime 1 0 2023-11-22 10:45:39.017
+!MESSAGE 
+
+!ENTRY com.ibm.mq.runtime 1 0 2023-11-22 10:45:39.018
+!MESSAGE C:\Program Files\IBM\ACE\12.0.5.0\tools>mqsifindmqpath
+
+!ENTRY com.ibm.etools.mft.pattern.community 4 0 2023-11-22 10:45:39.251
+!MESSAGE Connection to the URL https://ot4i.github.io/ace-patterns/es/repo_metadata.json failed. Response code: 404
+
+!ENTRY com.ibm.mq.runtime 1 0 2023-11-22 10:45:39.535
+!MESSAGE BIP8100I: No se ha podido detectar una instalación de IBM MQ 
+
+!ENTRY com.ibm.mq.runtime 4 0 2023-11-22 10:45:39.548
+!MESSAGE WebSphere MQ install location is not found.
+!SESSION 2023-11-22 10:46:26.775 -----------------------------------------------
+eclipse.buildId=4.15.0.2020042
+java.fullversion=8.0.7.5 - pwa6480sr7fp5ifix-20220310_01(SR7 FP5+IJ37785)
+JRE 1.8.0 Windows 11 amd64-64-Bit Compressed References 20220104_19630 (JIT enabled, AOT enabled)
+OpenJ9   - 2d4c7d9
+OMR      - 59845b7
+IBM      - 3c151c1
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=es_ES
+Framework arguments:  -showlocation -product com.ibm.etools.msgbroker.tooling.ide tools_auto -showlocation -product com.ibm.etools.msgbroker.tooling.ide
+Command-line arguments:  -data C:\ConsultaProductos -os win32 -ws win32 -arch x86_64 -showlocation -product com.ibm.etools.msgbroker.tooling.ide tools_auto -showlocation -product com.ibm.etools.msgbroker.tooling.ide
+
+!ENTRY org.eclipse.emf.ecore 2 0 2023-11-22 10:46:27.951
+!MESSAGE Both 'com.ibm.etools.mft.fcb' and 'com.ibm.etools.mft.gef.emf' register a package for 'http://www.ibm.com/wbi/2005/eflow_utility'
+
+!ENTRY org.eclipse.emf.ecore 2 0 2023-11-22 10:46:27.952
+!MESSAGE Both 'com.ibm.etools.mft.gef.emf' and 'com.ibm.etools.mft.gef.emf' register a package for 'http://www.ibm.com/wbi/2005/eflow_utility'
+
+!ENTRY org.eclipse.emf.ecore 2 0 2023-11-22 10:46:27.952
+!MESSAGE Both 'com.ibm.etools.mft.fcb' and 'com.ibm.etools.mft.pattern.capture.annotation' register a package for 'http://www.ibm.com/patternAnnotation/2010'
+
+!ENTRY org.eclipse.emf.ecore 2 0 2023-11-22 10:46:27.954
+!MESSAGE Both 'com.ibm.etools.mft.gef.emf' and 'org.eclipse.emf.ecore' register a package for 'http://www.eclipse.org/emf/2002/Ecore'
+
+!ENTRY org.eclipse.emf.ecore 2 0 2023-11-22 10:46:27.962
+!MESSAGE Both 'com.ibm.etools.javaee.core' and 'com.ibm.etools.mft.service.model' register an extension parser for 'application'
+
+!ENTRY org.eclipse.ui 2 2 2023-11-22 10:46:29.758
+!MESSAGE Invalid preference category path: com.ibm.importer.preferences (bundle: com.ibm.adapter.c, page: com.ibm.adapter.c.ui.preferencepage.CPreferencePage)
+
+!ENTRY org.eclipse.ui 2 2 2023-11-22 10:46:29.759
+!MESSAGE Invalid preference category path: com.ibm.importer.preferences (bundle: com.ibm.etools.cobol.preference.ui, page: com.ibm.etools.cobol.preference.ui.preferencepage.CobolPreferencePage)
+
+!ENTRY org.eclipse.ui 2 2 2023-11-22 10:46:29.759
+!MESSAGE Invalid preference category path: com.ibm.debug.breakpoints.common.pref.tracepoint (bundle: com.ibm.debug.wsa, page: com.ibm.debug.wsa.WSATracepointPreferencePage)
+
+!ENTRY org.eclipse.jface.text 2 0 2023-11-22 10:46:30.902
+!MESSAGE Duplicate template id: 'com.ibm.datatools.sqlxeditor.templates.xmlnamespaces2'
+
+!ENTRY org.eclipse.egit.ui 2 0 2023-11-22 10:46:30.924
+!MESSAGE Warning: The environment variable HOME is not set. The following directory will be used to store the Git
+user global configuration and to define the default location to store repositories: 'C:\Users\jcharris'. If this is
+not correct please set the HOME environment variable and restart Eclipse. Otherwise Git for Windows and
+EGit might behave differently since they see different configuration options.
+This warning can be switched off on the Team > Git > Confirmations and Warnings preference page.
+
+!ENTRY com.ibm.mq.runtime 1 0 2023-11-22 10:46:31.184
+!MESSAGE 
+
+!ENTRY com.ibm.mq.runtime 1 0 2023-11-22 10:46:31.184
+!MESSAGE C:\Program Files\IBM\ACE\12.0.5.0\tools>mqsifindmqpath
+
+!ENTRY com.ibm.mq.runtime 1 0 2023-11-22 10:46:31.386
+!MESSAGE BIP8100I: No se ha podido detectar una instalación de IBM MQ 
+
+!ENTRY com.ibm.mq.runtime 4 0 2023-11-22 10:46:31.401
+!MESSAGE WebSphere MQ install location is not found.
+
+!ENTRY com.ibm.etools.mft.pattern.community 4 0 2023-11-22 10:46:31.451
+!MESSAGE Connection to the URL https://ot4i.github.io/ace-patterns/es/repo_metadata.json failed. Response code: 404
+!SESSION 2023-11-30 12:02:54.332 -----------------------------------------------
+eclipse.buildId=4.15.0.2020042
+java.fullversion=8.0.7.5 - pwa6480sr7fp5ifix-20220310_01(SR7 FP5+IJ37785)
+JRE 1.8.0 Windows 11 amd64-64-Bit Compressed References 20220104_19630 (JIT enabled, AOT enabled)
+OpenJ9   - 2d4c7d9
+OMR      - 59845b7
+IBM      - 3c151c1
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=es_ES
+Framework arguments:  -showlocation -product com.ibm.etools.msgbroker.tooling.ide tools_auto -showlocation -product com.ibm.etools.msgbroker.tooling.ide
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -showlocation -product com.ibm.etools.msgbroker.tooling.ide tools_auto -showlocation -product com.ibm.etools.msgbroker.tooling.ide
+
+!ENTRY org.eclipse.emf.ecore 2 0 2023-11-30 12:03:00.381
+!MESSAGE Both 'com.ibm.etools.mft.fcb' and 'com.ibm.etools.mft.gef.emf' register a package for 'http://www.ibm.com/wbi/2005/eflow_utility'
+
+!ENTRY org.eclipse.emf.ecore 2 0 2023-11-30 12:03:00.382
+!MESSAGE Both 'com.ibm.etools.mft.gef.emf' and 'com.ibm.etools.mft.gef.emf' register a package for 'http://www.ibm.com/wbi/2005/eflow_utility'
+
+!ENTRY org.eclipse.emf.ecore 2 0 2023-11-30 12:03:00.383
+!MESSAGE Both 'com.ibm.etools.mft.fcb' and 'com.ibm.etools.mft.pattern.capture.annotation' register a package for 'http://www.ibm.com/patternAnnotation/2010'
+
+!ENTRY org.eclipse.emf.ecore 2 0 2023-11-30 12:03:00.385
+!MESSAGE Both 'com.ibm.etools.mft.gef.emf' and 'org.eclipse.emf.ecore' register a package for 'http://www.eclipse.org/emf/2002/Ecore'
+
+!ENTRY org.eclipse.emf.ecore 2 0 2023-11-30 12:03:00.395
+!MESSAGE Both 'com.ibm.etools.javaee.core' and 'com.ibm.etools.mft.service.model' register an extension parser for 'application'
+
+!ENTRY org.eclipse.ui 2 2 2023-11-30 12:03:02.378
+!MESSAGE Invalid preference category path: com.ibm.importer.preferences (bundle: com.ibm.adapter.c, page: com.ibm.adapter.c.ui.preferencepage.CPreferencePage)
+
+!ENTRY org.eclipse.ui 2 2 2023-11-30 12:03:02.379
+!MESSAGE Invalid preference category path: com.ibm.importer.preferences (bundle: com.ibm.etools.cobol.preference.ui, page: com.ibm.etools.cobol.preference.ui.preferencepage.CobolPreferencePage)
+
+!ENTRY org.eclipse.ui 2 2 2023-11-30 12:03:02.385
+!MESSAGE Invalid preference category path: com.ibm.debug.breakpoints.common.pref.tracepoint (bundle: com.ibm.debug.wsa, page: com.ibm.debug.wsa.WSATracepointPreferencePage)
+
+!ENTRY org.eclipse.egit.ui 2 0 2023-11-30 12:03:04.317
+!MESSAGE Warning: The environment variable HOME is not set. The following directory will be used to store the Git
+user global configuration and to define the default location to store repositories: 'C:\Users\jcharris'. If this is
+not correct please set the HOME environment variable and restart Eclipse. Otherwise Git for Windows and
+EGit might behave differently since they see different configuration options.
+This warning can be switched off on the Team > Git > Confirmations and Warnings preference page.
+
+!ENTRY org.eclipse.jface.text 2 0 2023-11-30 12:03:04.326
+!MESSAGE Duplicate template id: 'com.ibm.datatools.sqlxeditor.templates.xmlnamespaces2'
+
+!ENTRY com.ibm.mq.runtime 1 0 2023-11-30 12:03:04.680
+!MESSAGE 
+
+!ENTRY com.ibm.mq.runtime 1 0 2023-11-30 12:03:04.680
+!MESSAGE C:\Program Files\IBM\ACE\12.0.5.0\tools>mqsifindmqpath
+
+!ENTRY com.ibm.etools.mft.pattern.community 4 0 2023-11-30 12:03:04.756
+!MESSAGE Connection to the URL https://ot4i.github.io/ace-patterns/es/repo_metadata.json failed. Response code: 404
+
+!ENTRY com.ibm.mq.runtime 1 0 2023-11-30 12:03:04.954
+!MESSAGE BIP8100I: No se ha podido detectar una instalación de IBM MQ 
+
+!ENTRY com.ibm.mq.runtime 4 0 2023-11-30 12:03:04.967
+!MESSAGE WebSphere MQ install location is not found.

@@ -1,0 +1,30 @@
+BROKER SCHEMA com.bpd.core.util
+
+
+CREATE PROCEDURE HeaderChannelWsBPD(IN rHeaderI REFERENCE, IN rHeaderO REFERENCE)
+BEGIN
+	
+	SET rHeaderO.servicio 									= COALESCE(rHeaderI.servicio,'');
+	SET rHeaderO.operacion 									= COALESCE(rHeaderI.operacion,'');
+	SET rHeaderO.fechaInicioTx 								= rHeaderI.fechaInicioTx;
+    SET rHeaderO.fechaFinTx 								= rHeaderI.fechaFinTx;
+    SET rHeaderO.canal 										= COALESCE(rHeaderI.canal,'');
+    SET rHeaderO.servidorRemoto 							= COALESCE(rHeaderI.servidorRemoto,'');
+    SET rHeaderO.correlID 									= COALESCE(rHeaderI.correlID,'');
+    SET rHeaderO.queueManager 								= COALESCE(rHeaderI.queueManager,'');
+    SET rHeaderO.replytoQueue 								= COALESCE(rHeaderI.replytoQueue,'');
+    SET rHeaderO.solicitaConfirmacionlog 					= COALESCE(rHeaderI.solicitaConfirmacionlog,'');
+    SET rHeaderO.codigoError								= COALESCE(rHeaderO.codigoError,'');
+    SET rHeaderO.descripcionError							= COALESCE(rHeaderO.descripcionError,'');
+    SET rHeaderO.informacionCliente.tipoDocumento 			= COALESCE(rHeaderI.informacionCliente.tipoDocumento,'');
+    SET rHeaderO.informacionCliente.numDocumento 			= COALESCE(rHeaderI.informacionCliente.numDocumento,'');
+    SET rHeaderO.informacionCliente.docSecundario 			= COALESCE(rHeaderI.informacionCliente.docSecundario,'');
+    SET rHeaderO.informacionCliente.numeroDocSecundario 	= COALESCE(rHeaderI.informacionCliente.numeroDocSecundario,'');
+    SET rHeaderO.informacionCliente.usuario 				= COALESCE(rHeaderI.informacionCliente.usuario,'');
+	SET rHeaderO.informacionSeguridad.metodo				= COALESCE(rHeaderI.informacionSeguridad.metodo,'');
+    SET rHeaderO.informacionSeguridad.sum					= COALESCE(rHeaderI.informacionSeguridad.sum,'');
+    SET rHeaderO.informacionSeguridad.sum2					= COALESCE(rHeaderI.informacionSeguridad.sum2,'');
+    SET rHeaderO.informacionSeguridad.multifieldEncriptado	= COALESCE(rHeaderI.informacionSeguridad.multifieldEncriptado,'');
+    SET rHeaderO.informacionSeguridad.campos.campo[]		= rHeaderI.informacionSeguridad.campos.campo[];
+	
+END;

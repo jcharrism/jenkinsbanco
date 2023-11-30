@@ -1,0 +1,94 @@
+BROKER SCHEMA com.bpd.core.util.homologation
+
+/* 
+ *
+ * Módulo para obtener la información de homologación de una tupla.
+ * La estructura de información esperada en el LocalEnvironment para hacer la consulta es la siguiente: LocalEnvironment.HomologationQuery
+ *		<HomologationQuery>
+ *			<HomologationEntry>		-- Este tag se repite por cada regla de homologación que se quiera consultar
+ *				<system>nombre sistema</system>
+ *				<service>codigo_servicio</service>    
+ *				<InputFields>
+ *					<RuleField>		-- Este tag se repite por cada campo que hace parte de la regla
+ *						<Tag>nombreTag</tag>
+ *                      <valor_Tag>valorActual</valorTag>
+ *					</RuleField>
+ *				</InputFields>
+ *			</HomologationEntry>
+ *		<HomologationQuery>
+ *
+ *	La información de homologación se retorna en el LocalEnvironment en LocalEnvironment.HomologationQuery en un XML
+ *	en el que cada campo contiene el indicador si se encontró o no homologación y los valores de campos homologados
+ *		<HomologationQuery>
+ *			<HomologationEntry>		-- Este tag se repite por cada regla de homologación que se quiera consultar
+ *				<system>nombre sistema</system>
+ *				<service>codigo_servicio</service>    
+ *				<InputFields>
+ *					<RuleField>		-- Este tag se repite por cada campo que hace parte de la regla
+ *						<Tag>nombreTag</tag>
+ *                      <valor_Tag>valorActual</valorTag>
+ *                      <valorHomologado>valorHomologado</valorHomologado>
+ *					</RuleField>
+ *				</InputFields>
+ *			</HomologationEntry>
+ *		</HomologationQuery>
+ */
+DECLARE CacheCatalogInfo SHARED ROW; -- a shared variable that can be used by instances of a flow
+
+CREATE COMPUTE MODULE Homologation_TC_Compute
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		-- CALL CopyMessageHeaders();
+		CALL CopyEntireMessage();
+		DECLARE refIn REFERENCE TO InputLocalEnvironment.HomologationQuery;
+		DECLARE service, system CHARACTER;
+		
+		SET OutputLocalEnvironment = InputLocalEnvironment;
+		
+		SET service = refIn.HomologationEntry.service;
+		SET system 	= refIn.HomologationEntry.system;
+		--Traer de la base de datos homologacion correspondiente al servicio y componente
+			DECLARE component CHARACTER service||system;
+			CacheCatalogInfoMutex: BEGIN ATOMIC -- beginning of atomic block. Processing is single threaded until the END; is reached
+				IF CacheCatalogInfo.{service||system}.valid IS NULL THEN
+					CREATE FIELD Environment.Variables TYPE Name;
+					DECLARE rEnvironment REFERENCE TO Environment.Variables;
+					-- Invocar SP
+--					CALL getHomol(system,service, rEnvironment.resultSet[]) IN Database.{DSN_DB}.{Schema_DB};
+					CALL getHomol(system,service, rEnvironment.resultSet[]);
+					SET CacheCatalogInfo.{service||system}.ServiceInvocationData[] = rEnvironment.resultSet[];
+					SET CacheCatalogInfo.{service||system}.valid = TRUE;
+				END IF;
+			END CacheCatalogInfoMutex;
+			--Recorrer LoclaEnvironment para agregar homologados a la respuesta
+			DECLARE I INTEGER 1;
+			DECLARE matriz REFERENCE TO refIn.HomologationEntry.InputFields.RuleField[1];
+--			CREATE FIELD OutputLocalEnvironment.HomologationQuery.HomologationEntry.InputFields;
+--			DECLARE refOut REFERENCE TO OutputLocalEnvironment.HomologationQuery.HomologationEntry.InputFields;
+			WHILE LASTMOVE(matriz) DO
+				DECLARE RuleField CHARACTER THE (SELECT ITEM F1.VALOR_HOMOLOGACION FROM CacheCatalogInfo.{service||system}.ServiceInvocationData[] AS F1 WHERE F1.TAG_ORIG = matriz.Tag AND F1.TAG_ORIG_VALOR = matriz.valor_Tag);
+				SET OutputLocalEnvironment.HomologationQuery.HomologationEntry.InputFields.RuleField[I].valorHomologado 	= COALESCE(RuleField,matriz.valor_Tag);
+				SET I = I + 1;			
+				MOVE matriz NEXTSIBLING REPEAT NAME;
+			END WHILE;				
+		RETURN TRUE;
+	END;
+
+	CREATE PROCEDURE CopyMessageHeaders() BEGIN
+		DECLARE I INTEGER 1;
+		DECLARE J INTEGER;
+		SET J = CARDINALITY(InputRoot.*[]);
+		WHILE I < J DO
+			SET OutputRoot.*[I] = InputRoot.*[I];
+			SET I = I + 1;
+		END WHILE;
+	END;
+
+	CREATE PROCEDURE CopyEntireMessage() BEGIN
+		SET OutputRoot = InputRoot;
+	END;
+	CREATE PROCEDURE getHomol(IN P1 CHAR,IN P2 CHAR)
+	LANGUAGE DATABASE
+	DYNAMIC RESULT SETS 1
+	EXTERNAL NAME "GET_HOMOL";
+END MODULE;

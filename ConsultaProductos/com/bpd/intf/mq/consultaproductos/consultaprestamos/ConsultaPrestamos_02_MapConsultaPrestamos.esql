@@ -1,0 +1,67 @@
+BROKER SCHEMA com.bpd.intf.mq.consultaproductos.consultaprestamos
+
+CREATE COMPUTE MODULE ConsultaPrestamos_02_MapConsultaPrestamos
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		-- Declare namespaces
+		DECLARE s11 NAMESPACE 'http://schemas.xmlsoap.org/soap/envelope/';
+		DECLARE csif NAMESPACE 'http://www.cysce.com/csif-msg/ns/v1.0/csif-ms/';
+		DECLARE ns NAMESPACE 'http://bpd.com.do/xsd/ProductosServicios/SaldoCuenta';
+		DECLARE nssv NAMESPACE 'urn:bpd-com-do:service:ProductosServicios:ConsultaProductos:1.0';
+		DECLARE nsc NAMESPACE 'http://bpd.com.do/comun/ESBencabezado';
+
+		DECLARE MessageContex REFERENCE TO Environment.Variables.Context.MensajeOriginal;
+
+		SET OutputRoot.Properties = InputRoot.Properties;
+		SET OutputRoot.Properties.CodedCharSetId = MessageContex.Properties.CodedCharSetId;
+		SET OutputRoot.Properties.Encoding = MessageContex.Properties.Encoding;
+		SET OutputRoot.MQMD = InputRoot.MQMD;
+		SET OutputRoot.MQMD.MsgId = CAST(MessageContex.MQMD.CorrelId AS BLOB);
+		SET OutputRoot.MQMD.ReplyToQ = MessageContex.MQMD.ReplyToQ;
+		DELETE FIELD OutputRoot.MQMD.ReplyToQMgr;
+		SET OutputRoot.MQMD.Format = 'MQSTR  ';
+
+		CREATE FIELD OutputRoot.XMLNSC.MESSAGE TYPE Name;
+		DECLARE rBodyO REFERENCE TO OutputRoot.XMLNSC.MESSAGE;
+		DECLARE rBodyI REFERENCE TO InputRoot.XMLNSC.s11:Envelope.s11:Body.nssv:ConsultaProductosResponse;
+		DECLARE rHeader REFERENCE TO InputRoot.XMLNSC.s11:Envelope.s11:Header.csif:Messaging.csif:ErrorList;
+
+		IF (rHeader.csif:Error[1].errorCode = 'Success') THEN
+
+			SET rBodyO.(XMLNSC.Attribute)TYPE = MessageContex.XMLNSC.MESSAGE.TYPE;
+			SET rBodyO.(XMLNSC.Attribute)TRANSACTION = MessageContex.XMLNSC.MESSAGE.TRANSACTION;
+			SET rBodyO.(XMLNSC.Attribute)CORRELATIONID = MessageContex.XMLNSC.MESSAGE.CORRELATIONID;
+
+			CREATE FIELD rBodyO.LISTADOPRESTAMOS TYPE Name;
+			--GENERAR WHILE DE RESPUESTA
+			DECLARE I INTEGER 1;
+			DECLARE matriz REFERENCE TO rBodyI.ListaCuentas.Cuentas[1];
+			DECLARE tipoCuentaPrestamo CHARACTER Environment.Variables.Context.db.tipoCuenta; --HOMOLOGAR
+			DECLARE monedaLocal CHARACTER Environment.Variables.Context.db.monedaLocal;
+			WHILE LASTMOVE(matriz) DO
+				--Solo se muestran prestamos que sean de moneda local
+				IF matriz.tipo=tipoCuentaPrestamo AND matriz.moneda=monedaLocal THEN
+					SET rBodyO.LISTADOPRESTAMOS.{'PRESTAMO'||CAST(I AS CHARACTER)}.NUMERO = matriz.numero;
+					SET I = I + 1;
+				END IF;
+				MOVE matriz NEXTSIBLING REPEAT NAME;
+			END WHILE;
+
+		ELSE
+
+			SET rBodyO.(XMLNSC.Attribute)TYPE = '999';
+			SET rBodyO.(XMLNSC.Attribute)TRANSACTION = MessageContex.XMLNSC.MESSAGE.TRANSACTION;
+			SET rBodyO.(XMLNSC.Attribute)CORRELATIONID = MessageContex.XMLNSC.MESSAGE.CORRELATIONID;
+
+			SET rBodyO.(XMLNSC.Field)TRANSACTION = MessageContex.XMLNSC.MESSAGE.TRANSACTION;
+			SET rBodyO.SERVICIO = 'ConsultaPrestamos';
+			SET rBodyO.CODIGOERROR = FIELDVALUE(rHeader.csif:Error.errorCode);
+			SET rBodyO.DESCRIPCIONERROR = rHeader.csif:Error.csif:Description;
+			SET rBodyO.TARJETA = MessageContex.XMLNSC.MESSAGE.DOCUMENTO;
+
+		END IF;
+
+		RETURN TRUE;
+	END;
+
+END MODULE;

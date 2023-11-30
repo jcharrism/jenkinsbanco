@@ -1,0 +1,34 @@
+BROKER SCHEMA com.bpd.core.util.exception
+
+
+CREATE COMPUTE MODULE CH_TC_JSON_BuildFault_BuildFaultJson
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		SET OutputRoot.Properties = InputRoot.Properties;
+		SET OutputRoot.Properties.CodedCharSetId = Environment.Variables.CCSID;
+		
+		DECLARE rExceptionList REFERENCE TO InputExceptionList;
+		CREATE FIELD Environment.exceptions TYPE Name;
+		DECLARE rEnvironment REFERENCE TO Environment.exceptions;
+		
+		CALL com.cysce.core.util.exception.AddExceptionData( rExceptionList, rEnvironment );
+		
+		-- Header
+		CREATE FIELD OutputRoot.JSON.Data;
+		DECLARE rCabecera REFERENCE TO OutputRoot.JSON.Data;
+		DECLARE rCabeceraIn REFERENCE TO InputRoot.JSON.Data;
+		
+		SET rCabecera.SERVICE 						=rCabeceraIn.SERVICE;
+		SET rCabecera.CHANEL 						=rCabeceraIn.CHANEL;
+		SET rCabecera.CODIGOERROR 					=CAST(rEnvironment.exception[<].number AS CHARACTER);
+		IF (rEnvironment.exception[<].exceptionType = 'UserException') THEN
+			SET rCabecera.DESCRIPCIONERROR 			=rEnvironment.exception[<].text;
+		ELSE
+			SET rCabecera.DESCRIPCIONERROR 			=rEnvironment.exception[<].text || ' - ' || rEnvironment.exception[<].inserts;
+		END IF;
+		
+		SET OutputLocalEnvironment.Destination.HTTP.ReplyStatusCode = rEnvironment.exception[<].number;
+		
+		RETURN TRUE;
+	END;
+END MODULE;

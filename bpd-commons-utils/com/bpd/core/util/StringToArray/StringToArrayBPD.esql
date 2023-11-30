@@ -1,0 +1,20 @@
+BROKER SCHEMA com.bpd.core.util.StringToArray
+
+CREATE PROCEDURE StoABPD(IN msgStringI REFERENCE, IN separator CHAR, IN msgArrayO REFERENCE)
+BEGIN
+ 
+	DECLARE StringToParse CHAR msgStringI;
+	DECLARE Index INTEGER 1;
+	
+	WHILE LENGTH(StringToParse) > 0 DO
+		IF CONTAINS(StringToParse, separator) THEN
+			SET msgArrayO.Field[Index] =  SUBSTRING (StringToParse BEFORE separator);
+			SET StringToParse = SUBSTRING (StringToParse AFTER separator);
+		ELSE
+            SET msgArrayO.Field[Index] = StringToParse;
+            SET StringToParse = '';
+        END IF;
+       	SET Index = Index + 1;
+    END WHILE;
+    
+END;

@@ -1,0 +1,54 @@
+BROKER SCHEMA com.bpd.core.util.exception
+--  $MQSI Name=CH_MQ_BuildFault MQSI$
+--  $MQSI Version=1.0 MQSI$
+--  $MQSI Author=CYSCE S.A MQSI$
+DECLARE ReplyToQueue EXTERNAL CHARACTER '';
+
+CREATE COMPUTE MODULE CH_MQ_RTQ_BuildFault_BuildFault
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		SET OutputRoot.Properties = InputRoot.Properties;
+		SET OutputRoot.Properties.CodedCharSetId = Environment.Variables.CCSID;
+		SET OutputRoot.MQMD = InputRoot.MQMD;
+		SET OutputRoot.MQMD.MsgId = InputRoot.MQMD.CorrelId;
+		SET OutputRoot.MQMD.ReplyToQ = ReplyToQueue;
+		SET OutputRoot.MQMD.ReplyToQMgr = '';
+		
+		DECLARE rExceptionList REFERENCE TO InputExceptionList;
+		CREATE FIELD Environment.exceptions TYPE Name;
+		DECLARE rEnvironment REFERENCE TO Environment.exceptions;
+		
+		CALL com.cysce.core.util.exception.AddExceptionData( rExceptionList, rEnvironment );
+		
+		DECLARE rHeader REFERENCE TO InputRoot.XMLNSC.MESSAGE.HEADER;
+		CREATE FIELD OutputRoot.XMLNSC.MESSAGE TYPE Name;
+		DECLARE rBodyO REFERENCE TO OutputRoot.XMLNSC.MESSAGE;			
+		SET rBodyO.(XMLNSC.Attribute)TYPE 		= 'RS';
+		SET rBodyO.HEADER.CHANNEL				= COALESCE(rHeader.CHANNEL,'');
+		SET rBodyO.HEADER.CORRELATIONID 		= COALESCE(rHeader.CORRELATIONID,'');
+		SET rBodyO.HEADER.SERVERSOURCE 			= COALESCE(rHeader.SERVERSOURCE,'');
+		SET rBodyO.HEADER.SERVICESOURCE 		= COALESCE(rHeader.SERVICESOURCE,'');
+		SET rBodyO.HEADER.SERVERDESTINATION 	= COALESCE(rHeader.SERVERDESTINATION,'');
+		SET rBodyO.HEADER.SERVICEDESTINATION 	= COALESCE(rHeader.SERVICEDESTINATION,'');
+		
+		IF (rEnvironment.exception[<].number = 5026 OR rEnvironment.exception[<].number = 5004) THEN
+			SET rBodyO.HEADER.ERRORCODE			= '9901';
+			-- Obtiene nombre de tag para excepciones (Tags requeridos)
+			DECLARE posicion INT POSITION('"' IN rEnvironment.exception[<].inserts);
+			DECLARE tagXML CHARACTER SUBSTRING(rEnvironment.exception[<].inserts FROM posicion+1);
+			SET posicion = POSITION('"' IN tagXML);
+			SET tagXML   = SUBSTRING(tagXML FROM 1 FOR (posicion-1));
+			
+			SET rBodyO.HEADER.ERRORDESCRIPTION 	= 'Data Invalida - '||tagXML;
+		ELSE
+			SET rBodyO.HEADER.ERRORCODE 		= rEnvironment.exception[<].number;
+			SET rBodyO.HEADER.ERRORDESCRIPTION 	= rEnvironment.exception[<].text;
+		END IF;
+		
+		IF (rEnvironment.exception[<].exceptionType = 'UserException') THEN
+			SET rBodyO.HEADER.ERRORDESCRIPTION 	= rEnvironment.exception[<].text;
+		END IF;
+		
+		RETURN TRUE;
+	END;
+END MODULE;

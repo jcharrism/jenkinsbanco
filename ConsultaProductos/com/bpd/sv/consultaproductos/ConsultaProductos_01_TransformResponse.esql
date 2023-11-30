@@ -1,0 +1,78 @@
+BROKER SCHEMA com.bpd.sv.consultaproductos
+
+CREATE COMPUTE MODULE ConsultaProductos_01_TransformResponse
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		--Declare Namespace
+		DECLARE s11 NAMESPACE 'http://schemas.xmlsoap.org/soap/envelope/';
+		DECLARE csif NAMESPACE 'http://www.cysce.com/csif-msg/ns/v1.0/csif-ms/';
+		DECLARE ns NAMESPACE 'http://bpd.com.do/xsd/ProductosServicios/SaldoCuenta';
+		DECLARE nssv NAMESPACE 'urn:bpd-com-do:service:ProductosServicios:ConsultaProductos:1.0';
+		DECLARE nsc NAMESPACE 'http://bpd.com.do/comun/ESBencabezado';
+		DECLARE nse NAMESPACE 'http://bpd.com.do/comun/ESBException';
+
+		SET OutputRoot.Properties = InputLocalEnvironment.Properties;
+		SET OutputRoot.MQMD = InputLocalEnvironment.MQMD;
+
+		CREATE FIELD OutputRoot.XMLNSC.s11:Envelope.s11:Header.csif:Messaging TYPE Name;
+		DECLARE rHeader REFERENCE TO OutputRoot.XMLNSC.s11:Envelope.s11:Header.csif:Messaging;
+
+		DECLARE rBodyI REFERENCE TO InputRoot.SOAP.Body.ns:ObtenerTipoCuentaRes;
+		DECLARE rFaultI REFERENCE TO InputRoot.SOAP.Body.s11:Fault;
+
+		CREATE FIELD OutputRoot.XMLNSC.s11:Envelope.s11:Header.nsc:CabeceroReq TYPE Name;
+		DECLARE rHeaderO REFERENCE TO OutputRoot.XMLNSC.s11:Envelope.s11:Header.nsc:CabeceroReq;
+		DECLARE rHeaderI REFERENCE TO InputRoot.XMLNSC.s11:Envelope.s11:Header;
+		SET rHeaderO.servicio =COALESCE(rHeaderI.nsc:CabeceroRes.servicio,'ConsultaProductos');
+		SET rHeaderO.operacion =COALESCE(rHeaderI.nsc:CabeceroRes.operacion,'ConsultaProductos');
+		SET rHeaderO.canal =Environment.Header.nsc:CabeceroReq.canal;		
+
+		IF EXISTS (rFaultI.detail.nse:ESBExcepcion.codigo[]) THEN
+			--GENERAR RESPUESTA DE ERROR
+			SET rHeader.csif:CollaborationInfo.csif:Service = 'ConsultaProductos';
+			SET rHeader.csif:ErrorList.csif:Error.(XMLNSC.Attribute)origin = 'ConsultaProductos';
+			SET rHeader.csif:ErrorList.csif:Error.(XMLNSC.Attribute)errorCode = rFaultI.detail.nse:ESBExcepcion.codigo;
+			SET rHeader.csif:ErrorList.csif:Error.csif:Description = rFaultI.detail.nse:ESBExcepcion.descripcion;
+			SET rHeader.csif:ErrorList.csif:Error.csif:ErrorDetail = '';
+		ELSE
+			SET rHeader.csif:ErrorList.csif:Error.(XMLNSC.Attribute)errorCode = 'Success';
+			CREATE FIELD OutputRoot.XMLNSC.s11:Envelope.s11:Body.nssv:ConsultaProductosResponse TYPE Name;
+			DECLARE rBodyO REFERENCE TO OutputRoot.XMLNSC.s11:Envelope.s11:Body.nssv:ConsultaProductosResponse;
+
+			SET rBodyO.codigoRetorno = rBodyI.codigoRetorno;
+			SET rBodyO.nombre = rBodyI.nombre;
+			SET rBodyO.clienteTipo = rBodyI.clienteTipo;
+			SET rBodyO.orgNombre = rBodyI.orgNombre;
+			SET rBodyO.clienteSegmento = rBodyI.clienteSegmento;
+			SET rBodyO.email = rBodyI.email;
+			SET rBodyO.telefono1 = rBodyI.telefono1;
+			SET rBodyO.telefono2 = rBodyI.telefono2;
+			
+			--While de respuesta
+			DECLARE I INTEGER 1;
+			DECLARE matriz REFERENCE TO rBodyI.ns:ListaCuentas.ns:Cuentas[1];
+			WHILE LASTMOVE(matriz) DO
+				SET rBodyO.ListaCuentas.Cuentas[I].tipo = matriz.tipo;
+				SET rBodyO.ListaCuentas.Cuentas[I].subtipo = matriz.subtipo;
+				SET rBodyO.ListaCuentas.Cuentas[I].numero = matriz.numero;
+				SET rBodyO.ListaCuentas.Cuentas[I].moneda = matriz.moneda;
+				SET rBodyO.ListaCuentas.Cuentas[I].saldoActual = matriz.saldoActual;
+				SET rBodyO.ListaCuentas.Cuentas[I].saldoDisponsible = matriz.saldoDisponsible;
+				SET rBodyO.ListaCuentas.Cuentas[I].alias = matriz.alias;
+				SET rBodyO.ListaCuentas.Cuentas[I].sePermiteTransaccion = matriz.sePermiteTransaccion;
+				SET rBodyO.ListaCuentas.Cuentas[I].esProductoAdicional = matriz.esProductoAdicional;
+				SET rBodyO.ListaCuentas.Cuentas[I].relacion = matriz.relacion;
+				SET rBodyO.ListaCuentas.Cuentas[I].isVisible = matriz.isVisible;
+				SET rBodyO.ListaCuentas.Cuentas[I].tasaDeInteres = matriz.tasaDeInteres;
+				SET rBodyO.ListaCuentas.Cuentas[I].desembolsoEnable = matriz.desembolsoEnable;
+				SET rBodyO.ListaCuentas.Cuentas[I].limiteCredito = matriz.limiteCredito;
+				SET I = I + 1;
+				MOVE matriz NEXTSIBLING REPEAT NAME;
+			END WHILE;
+
+		END IF;
+		RETURN TRUE;
+
+	END;
+
+END MODULE;

@@ -1,0 +1,44 @@
+BROKER SCHEMA com.bpd.core.util.logger
+
+
+CREATE COMPUTE MODULE AS400RS_Logger_transform
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		
+		-- Declare namespaces
+		DECLARE s12 NAMESPACE 'http://www.w3.org/2003/05/soap-envelope';
+		DECLARE csif NAMESPACE 'http://www.cysce.com/csif-msg/ns/v1.0/csif-ms/';
+		DECLARE hrd NAMESPACE 'http://bpd.com.do/comun/ESBencabezado';
+		DECLARE log NAMESPACE 'urn:bpd-com-do:utilities:bitacora:logger:1.0';
+		
+		SET OutputRoot.Properties 	= InputRoot.Properties;
+		
+		CREATE FIELD OutputRoot.XMLNSC.log:Log.header TYPE Name;
+		DECLARE rHeader REFERENCE TO OutputRoot.XMLNSC.log:Log.header;
+		DECLARE rHrd400 REFERENCE TO InputRoot.XMLNSC.MESSAGE.HEADER;
+		SET rHeader.servicio 		= COALESCE(Environment.csif:Messaging.csif:CollaborationInfo.csif:Service,Environment.csif:Messaging.CollaborationInfo.Service);
+		SET rHeader.operacion 		= COALESCE(Environment.csif:Messaging.csif:CollaborationInfo.csif:Action,Environment.csif:Messaging.CollaborationInfo.Action);
+		SET rHeader.canal 			= COALESCE(rHrd400.CHANNEL,'');
+		SET rHeader.servidorRemoto 	= COALESCE(rHrd400.RMT_SRVR,'');
+		SET rHeader.correlID 		= COALESCE(rHrd400.CORRELATIONID,'');
+		
+		CREATE FIELD OutputRoot.XMLNSC.log:Log.header.informacionCliente TYPE Name;
+		DECLARE rInfoClt REFERENCE TO OutputRoot.XMLNSC.log:Log.header.informacionCliente;
+		DECLARE rCustInfo REFERENCE TO InputRoot.XMLNSC.MESSAGE.CUST_INFO;
+		SET rInfoClt.tipoDocumento 	= COALESCE(rCustInfo.DOC_TYPE,'');
+		SET rInfoClt.numDocumento 	= COALESCE(rCustInfo.DOC_NUMBER,'');
+		SET rInfoClt.usuario 		= COALESCE(rCustInfo.USERID,'');
+		
+		CREATE FIELD OutputRoot.XMLNSC.log:Log.informacionLOG TYPE Name;
+		DECLARE rInfoLog REFERENCE TO OutputRoot.XMLNSC.log:Log.informacionLOG;
+		SET rInfoLog.timestamp 		= CAST(CAST(InputRoot.Properties.CreationTime AS TIMESTAMP FORMAT 'yyyy-MM-dd HH:mm:ss.SSS zzz')AS CHARACTER FORMAT 'dd-MM-yyyy HH:mm:ss');
+		SET rInfoLog.logId 			= COALESCE(Environment.csif:Messaging.csif:MessageInfo.csif:MessageId,Environment.csif:Messaging.MessageInfo.MessageId);
+		SET rInfoLog.secuencia 		= '';
+		SET rInfoLog.backendDestino = '';
+		
+		DECLARE message BLOB ASBITSTREAM(InputBody CCSID 819 ENCODING InputRoot.Properties.Encoding);
+		SET OutputRoot.XMLNSC.log:Log.mensaje = CAST(message AS CHARACTER CCSID 819 ENCODING InputRoot.Properties.Encoding);
+		
+		RETURN TRUE;
+	END;
+END MODULE;

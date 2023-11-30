@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="urn:bpd-com-do:utilities:bitacora:logger:1.0"
+    xmlns:tns="urn:bpd-com-do:utilities:bitacora:logger:1.0">
+
+    <!-- wrapper element of the request message -->
+    <xsd:element name="Log" type="tns:LoggerType">
+    </xsd:element>
+
+    <!-- Type referenced by the wrapper element of the request message -->
+    <xsd:complexType name="LoggerType">
+        <xsd:sequence>
+			<xsd:element name="header" type="tns:HeaderType" maxOccurs="unbounded"/>
+			<xsd:element name="informacionLOG" type="tns:InfoLogType" maxOccurs="unbounded"/>
+			<xsd:element name="mensaje" type="xsd:string" minOccurs="1" nillable="false"/>
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="HeaderType">
+        <xsd:sequence>
+			<xsd:element name="servicio" type="xsd:string" minOccurs="1" nillable="false"/>
+			<xsd:element name="operacion" type="xsd:string" minOccurs="1" nillable="false"/>
+			<xsd:element name="canal" type="xsd:string" minOccurs="1" nillable="false"/>
+			<xsd:element name="servidorRemoto" type="xsd:string" minOccurs="1" nillable="false"/>
+			<xsd:element name="correlID" type="xsd:string" minOccurs="1" nillable="false"/>
+			<xsd:element name="informacionCliente" type="tns:InfoClienteType" maxOccurs="unbounded"/>
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="InfoClienteType">
+        <xsd:sequence>
+			<xsd:element name="tipoDocumento" type="xsd:string" minOccurs="1" nillable="false"/>
+			<xsd:element name="numDocumento" type="xsd:string" minOccurs="1" nillable="false"/>
+			<xsd:element name="usuario" type="xsd:string" minOccurs="1" nillable="false"/>
+		</xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="InfoLogType">
+        <xsd:sequence>
+        	<xsd:element name="timestamp" type="xsd:dateTime" minOccurs="1" nillable="false"/>
+			<xsd:element name="logId" type="xsd:string" minOccurs="1" nillable="false"/>
+			<xsd:element name="secuencia" type="xsd:string" minOccurs="1" nillable="false"/>
+			<xsd:element name="backendDestino" type="xsd:string" minOccurs="1" nillable="false"/>
+		</xsd:sequence>
+    </xsd:complexType>
+    
+</xsd:schema>

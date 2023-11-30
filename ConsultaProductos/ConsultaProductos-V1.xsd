@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">	
+	<xsd:element name="MESSAGE" type="MessageType" />	
+	<xsd:complexType name="MessageType">
+		<xsd:sequence>
+			<xsd:element type="xsd:string" name="DOCUMENTO" />
+			<xsd:element type="xsd:string" name="TIPODOCUMENTO" />
+		</xsd:sequence>
+		<xsd:attribute type="xsd:string" name="TYPE"/>
+		<xsd:attribute type="xsd:string" name="TRANSACTION"/>
+		<xsd:attribute type="xsd:string" name="CORRELATIONID"/>
+	</xsd:complexType>
+</xsd:schema>

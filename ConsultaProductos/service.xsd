@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://bpd.com.do/comun/ESBencabezado" xmlns:bpd="http://bpd.com.do/comun/ESBencabezado" xmlns:ibmSchExtn="http://www.ibm.com/schema/extensions">
+  <xsd:annotation>
+    <xsd:documentation>Autor: Isai Oliva Romo
+			Fecha: 23 - Marzo - 2015
+			Arquitectura de aplicaciones.
+			Header que debe estar presente en todos los request en el ESB</xsd:documentation>
+  </xsd:annotation>
+  <xsd:element name="Header" type="bpd:HeaderType"/>
+  <xsd:element ibmSchExtn:docRoot="true" name="CabeceroReq" type="bpd:HeaderType"/>
+  <xsd:element ibmSchExtn:docRoot="true" name="CabeceroRes" type="bpd:HeaderType"/>
+  <xsd:complexType name="HeaderType">
+    <xsd:sequence>
+      <xsd:element minOccurs="1" name="cliente" type="xsd:string">
+        <xsd:annotation>
+          <xsd:documentation>Nombre del cliente del banco</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element minOccurs="1" name="servicio" nillable="false" type="xsd:string">
+        <xsd:annotation>
+          <xsd:documentation>Servicio que se ejecuta en el backend</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element minOccurs="0" name="operacion" type="xsd:string">
+        <xsd:annotation>
+          <xsd:documentation>Operacion que se ejecuta en el backend</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element minOccurs="1" name="usuario" type="xsd:string">
+        <xsd:annotation>
+          <xsd:documentation>nombre del usuario en sesion de la aplicacion</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element minOccurs="0" name="fechaTrans" type="xsd:dateTime">
+        <xsd:annotation>
+          <xsd:documentation>datetime de la invocacion del servicio</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element minOccurs="1" name="consumidor" nillable="false" type="xsd:string">
+        <xsd:annotation>
+          <xsd:documentation>consumidor</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="1" name="tipoCliente" nillable="false">
+        <xsd:annotation>
+          <xsd:documentation>Tipo de cliente que usa el servicio "personal" o
+						"empresarial"</xsd:documentation>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="personal"/>
+            <xsd:enumeration value="empresarial"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+</xsd:schema>

@@ -1,0 +1,32 @@
+BROKER SCHEMA com.bpd.core.util.asignarreplytoq
+
+
+CREATE COMPUTE MODULE AsignarReplyToQ_TC_Response
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		
+		SET OutputRoot = InputRoot;
+		SET OutputRoot.MQMD.ReplyToQ = InputRoot.MQMD.ReplyToQ;
+		SET OutputRoot.MQMD.ReplyToQMgr = InputRoot.MQMD.ReplyToQMgr;
+		
+		
+		--Validar Datos MQMD ReplyToQ
+        IF (InputRoot.MQMD.ReplyToQ = '' OR InputRoot.MQMD.ReplyToQ = NULL)THEN
+        	SET OutputRoot.MQMD.ReplyToQ	= THE (SELECT ITEM F1.value_Parameter FROM InputLocalEnvironment.ParameterQuery.ParameterEntry.OutputFields.RuleField[] AS F1 WHERE F1.name_Parameter = 'REPLYTOQ');
+        END IF;
+        
+         --Validar Datos MQMD ReplyToQMgr
+        IF (InputRoot.MQMD.ReplyToQMgr = '' OR InputRoot.MQMD.ReplyToQMgr = NULL)THEN
+			SET OutputRoot.MQMD.ReplyToQMgr = THE (SELECT ITEM F1.value_Parameter FROM InputLocalEnvironment.ParameterQuery.ParameterEntry.OutputFields.RuleField[] AS F1 WHERE F1.name_Parameter = 'REPLYTOQMGR');
+        END IF;
+        
+        --Si existe error se va para la terminal catch de lo contrario por la terminal output del subflujo
+        IF EXISTS(InputExceptionList.*[])THEN
+        	PROPAGATE TO TERMINAL ('out1');
+        ELSE
+        	PROPAGATE TO TERMINAL ('out');
+        END IF;
+        
+		RETURN FALSE;
+	END;
+END MODULE;

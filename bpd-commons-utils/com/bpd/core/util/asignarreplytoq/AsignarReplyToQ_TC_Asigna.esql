@@ -1,0 +1,16 @@
+BROKER SCHEMA com.bpd.core.util.asignarreplytoq
+
+--Declarar UDP
+DECLARE Service EXTERNAL CHARACTER '';
+
+CREATE COMPUTE MODULE AsignarReplyToQ_TC_Asigna
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		
+		SET OutputRoot = InputRoot;
+		
+		--Leer UDP
+		SET OutputLocalEnvironment.ParameterQuery.ParameterEntry.service = Service;
+		RETURN TRUE;
+	END;
+END MODULE;

@@ -1,0 +1,66 @@
+BROKER SCHEMA com.bpd.core.util.exception
+
+
+
+CREATE COMPUTE MODULE CH_WS_BuildFault_BuildFault
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		
+		SET OutputRoot.Properties = InputRoot.Properties;
+		SET OutputRoot.Properties.CodedCharSetId = Environment.Variables.CCSID;
+		
+		DECLARE esb NAMESPACE 'http://bpd.com.do/comun/ESBencabezado';
+		DECLARE s12 NAMESPACE 'http://www.w3.org/2003/05/soap-envelope';
+		DECLARE ns NAMESPACE 'http://bpd.com.do/comun/ESBException';
+		DECLARE csif NAMESPACE 'http://www.cysce.com/csif-msg/ns/v1.0/csif-ms/';
+		DECLARE xml NAMESPACE 'http://www.w3.org/XML/1998/namespace';
+		
+		DECLARE rExceptionList REFERENCE TO InputExceptionList;
+		CREATE FIELD Environment.exceptions TYPE Name;
+		DECLARE rEnvironment REFERENCE TO Environment.exceptions;
+		
+		CALL com.cysce.core.util.exception.AddExceptionData( rExceptionList, rEnvironment );
+		
+		SET OutputRoot.SOAP.Context.Namespace.(SOAP.NamespaceDecl)xmlns:s12 = s12;
+		-- Header
+		CREATE FIELD OutputRoot.SOAP.Header.esb:CabeceroReq TYPE Name;
+		DECLARE rCabecera REFERENCE TO OutputRoot.SOAP.Header.esb:CabeceroReq;
+		DECLARE rCabeceraI REFERENCE TO InputRoot.SOAP.Header.esb:CabeceroReq;
+		SET rCabecera.servicio 									= COALESCE(rCabeceraI.servicio,'');
+		SET rCabecera.operacion 								= COALESCE(rCabeceraI.operacion,'');
+		SET rCabecera.fechaInicioTx 							= COALESCE(rCabeceraI.fechaInicioTx, InputRoot.Properties.CreationTime);
+        SET rCabecera.fechaFinTx 								= COALESCE(rCabeceraI.fechaFinTx, CURRENT_GMTTIMESTAMP);
+        SET rCabecera.canal 									= COALESCE(rCabeceraI.canal,'');
+        SET rCabecera.servidorRemoto 							= COALESCE(rCabeceraI.servidorRemoto,'');
+        SET rCabecera.correlID 									= COALESCE(rCabeceraI.correlID,'');
+        SET rCabecera.queueManager 								= COALESCE(rCabeceraI.queueManager,'');
+        SET rCabecera.replytoQueue 								= COALESCE(rCabeceraI.replytoQueue,'');
+        SET rCabecera.solicitaConfirmacionlog 					= COALESCE(rCabeceraI.solicitaConfirmacionlog,'');
+        SET rCabecera.codigoError 								= rEnvironment.exception[<].number;
+        SET rCabecera.descripcionError 							= rEnvironment.exception[<].text;
+        SET rCabecera.informacionCliente.tipoDocumento 			= COALESCE(rCabeceraI.informacionCliente.tipoDocumento,'');
+        SET rCabecera.informacionCliente.numDocumento 			= COALESCE(rCabeceraI.informacionCliente.numDocumento,'');
+        SET rCabecera.informacionCliente.docSecundario 			= COALESCE(rCabeceraI.informacionCliente.docSecundario,'');
+        SET rCabecera.informacionCliente.numeroDocSecundario 	= COALESCE(rCabeceraI.informacionCliente.numeroDocSecundario,'');
+        SET rCabecera.informacionCliente.usuario 				= COALESCE(rCabeceraI.informacionCliente.usuario,'');
+		
+		-- Body
+		CREATE FIELD OutputRoot.SOAP.Body.s12:Fault TYPE Name;
+		DECLARE service REFERENCE TO OutputRoot.SOAP.Body.s12:Fault;
+		SET service.s12:Code.s12:Value 							= 's12:Receiver';
+		SET service.s12:Reason.s12:Text 						= rEnvironment.exception[<].text;
+		SET service.s12:Reason.s12:Text.(SOAP.Attribute)xml:lang	= 'en';
+		SET service.s12:Detail.ns:ESBExcepcion.codigo 			= rEnvironment.exception[<].number;
+		SET service.s12:Detail.ns:ESBExcepcion.descripcion 		= rEnvironment.exception[<].text;
+		IF (rEnvironment.exception[<].exceptionType = 'UserException') THEN
+			SET service.s12:Detail.ns:ESBExcepcion.rastro 		= rEnvironment.exception[<].text;
+		ELSE
+			SET service.s12:Detail.ns:ESBExcepcion.rastro 		= rEnvironment.exception[<].text || ' - ' || rEnvironment.exception[<].inserts;
+		END IF;
+		SET service.s12:Detail.ns:ESBExcepcion.actor 			= InputRoot.HTTPInputHeader."X-Original-HTTP-Command";
+		SET service.s12:Detail.ns:ESBExcepcion.backend 			= '';
+		SET service.s12:Detail.ns:ESBExcepcion.compensacion 	= '';
+		
+		RETURN TRUE;
+	END;
+END MODULE;

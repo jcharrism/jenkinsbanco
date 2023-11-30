@@ -1,0 +1,118 @@
+/**********************************************************************
+ *																	  *
+ * File Name: Logger_transform.esql							  		  *
+ *																	  *
+ * Purpose:   Manejar logs de los servicios de BPD.					  *
+ * 																	  *
+ * Authors:   Germán Torres M.										  *
+ *                 													  *
+ * Date:      25 May 2016				     						  *
+ * Version:   1.0													  *
+ *																	  *
+ * @copyright  CYSCE S.A 2007.  All rights reserved.				  *
+ * No part of this source may be reproduced, store in a retrival 	  *
+ * system, or transmitted, in any form by any means, electronic, 	  *
+ * mechanical, photo copying, recording or otherwise, without the 	  *
+ * prior written permission of CYSCE S.A							  *
+ *																      *
+ **********************************************************************/
+BROKER SCHEMA com.bpd.core.util.logger
+--  $MQSI Name=Logger_Transform MQSI$
+--  $MQSI Version=1.0 MQSI$
+--  $MQSI Author=CYSCE S.A MQSI$
+
+DECLARE messageType EXTERNAL CHARACTER '';
+DECLARE componentType EXTERNAL CHARACTER '';
+
+/**
+ * @author <a href="mailto:gtorres@cysce.com">German Torres M.</a>
+ */
+CREATE COMPUTE MODULE Log_transform
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		
+		-- Declare namespaces
+		DECLARE s12 NAMESPACE 'http://www.w3.org/2003/05/soap-envelope';
+		DECLARE csif NAMESPACE 'http://www.cysce.com/csif-msg/ns/v1.0/csif-ms/';
+		DECLARE hrd NAMESPACE 'http://bpd.com.do/comun/ESBencabezado';
+		DECLARE log NAMESPACE 'urn:bpd-com-do:utilities:bitacora:logger:1.0';
+		
+		SET OutputRoot.Properties 	= InputRoot.Properties;
+		
+		CREATE FIELD OutputRoot.XMLNSC.log:Log.header TYPE Name;
+		DECLARE rHeader REFERENCE TO OutputRoot.XMLNSC.log:Log.header;
+		
+		CREATE FIELD OutputRoot.XMLNSC.log:Log.header.informacionCliente TYPE Name;
+		DECLARE rInfoClt REFERENCE TO OutputRoot.XMLNSC.log:Log.header.informacionCliente;
+		
+		CREATE FIELD OutputRoot.XMLNSC.log:Log.informacionLOG TYPE Name;
+		DECLARE rInfoLog REFERENCE TO OutputRoot.XMLNSC.log:Log.informacionLOG;
+		
+		IF (UCASE(messageType) = 'SOAP') THEN
+			IF (UCASE(componentType) = 'WS') THEN
+				DECLARE rCabecera REFERENCE TO InputRoot.SOAP.Header.hrd:CabeceroReq;
+				SET rHeader.servicio 		= COALESCE(Environment.csif:Messaging.csif:CollaborationInfo.csif:Service,Environment.csif:Messaging.CollaborationInfo.Service);
+				SET rHeader.operacion 		= COALESCE(Environment.csif:Messaging.csif:CollaborationInfo.csif:Action,Environment.csif:Messaging.CollaborationInfo.Action);
+				SET rHeader.canal 			= COALESCE(rCabecera.canal,'');
+				SET rHeader.servidorRemoto 	= rCabecera.servidorRemoto;
+				SET rHeader.correlID 		= COALESCE(rCabecera.correlID,'');
+				
+				SET rInfoClt.tipoDocumento 	= COALESCE(rCabecera.informacionCliente.tipoDocumento,'');
+				SET rInfoClt.numDocumento 	= COALESCE(rCabecera.informacionCliente.numDocumento,'');
+				SET rInfoClt.usuario 		= COALESCE(rCabecera.informacionCliente.usuario,'');
+				
+				SET rInfoLog.timestamp 		= CAST(CAST(InputRoot.Properties.CreationTime AS TIMESTAMP FORMAT 'yyyy-MM-dd HH:mm:ss.SSS zzz')AS CHARACTER FORMAT 'dd-MM-yyyy HH:mm:ss');
+				SET rInfoLog.logId 			= COALESCE(Environment.csif:Messaging.csif:MessageInfo.csif:MessageId,Environment.csif:Messaging.MessageInfo.MessageId);
+				SET rInfoLog.secuencia 		= '';
+				SET rInfoLog.backendDestino = '';
+			ELSEIF (UCASE(componentType) = 'JSON') THEN
+				DECLARE rCabecera REFERENCE TO InputRoot.JSON.Data;
+				SET rHeader.servicio 		= COALESCE(Environment.csif:Messaging.csif:CollaborationInfo.csif:Service,Environment.csif:Messaging.CollaborationInfo.Service);
+				SET rHeader.operacion 		= COALESCE(Environment.csif:Messaging.csif:CollaborationInfo.csif:Action,Environment.csif:Messaging.CollaborationInfo.Action);
+				SET rHeader.canal 			= COALESCE(rCabecera.CHANEL,'');
+				SET rHeader.servidorRemoto 	= '';
+				SET rHeader.correlID 		= '';
+				
+				SET rInfoClt.tipoDocumento 	= COALESCE(rCabecera.informacionCliente.tipoDocumento,'');
+				SET rInfoClt.numDocumento 	= COALESCE(rCabecera.informacionCliente.numDocumento,'');
+				SET rInfoClt.usuario 		= COALESCE(rCabecera.informacionCliente.usuario,'');
+				
+				SET rInfoLog.timestamp 		= CAST(CAST(InputRoot.Properties.CreationTime AS TIMESTAMP FORMAT 'yyyy-MM-dd HH:mm:ss.SSS zzz')AS CHARACTER FORMAT 'dd-MM-yyyy HH:mm:ss');
+				SET rInfoLog.logId 			= COALESCE(Environment.csif:Messaging.csif:MessageInfo.csif:MessageId,Environment.csif:Messaging.MessageInfo.MessageId);
+				SET rInfoLog.secuencia 		= '';
+				SET rInfoLog.backendDestino = '';				
+			ELSE
+				THROW USER EXCEPTION SEVERITY 3 MESSAGE 9999 VALUES('Logger Not Found');
+			END IF;
+		ELSE
+			IF (UCASE(messageType) = 'XML') THEN
+				IF (UCASE(componentType) = 'AS400') THEN
+					DECLARE rHeaderI REFERENCE TO InputRoot.XMLNSC.MESSAGE.HEADER;
+					DECLARE rAdminInfoI REFERENCE TO InputRoot.XMLNSC.MESSAGE.ADMINISTRATIVEINFO;
+					SET rHeader.servicio 		= COALESCE(Environment.csif:Messaging.csif:CollaborationInfo.csif:Service,Environment.csif:Messaging.CollaborationInfo.Service); --COALESCE(rHeaderI.FUNCTION,'');
+					SET rHeader.operacion 		= COALESCE(Environment.csif:Messaging.csif:CollaborationInfo.csif:Action,Environment.csif:Messaging.CollaborationInfo.Action); --COALESCE(rHeaderI.FUNCTION,'');
+					SET rHeader.canal 			= COALESCE(rHeaderI.CHANNEL,rAdminInfoI.CHANNEL);
+					SET rHeader.servidorRemoto 	= COALESCE(rHeaderI.RMT_SRVR,rHeaderI.SERVERSOURCE);
+					SET rHeader.correlID 		= COALESCE(rHeaderI.CORRELATIONID,'');
+					
+					DECLARE rCustInfo REFERENCE TO InputRoot.XMLNSC.MESSAGE.CUST_INFO;
+					SET rInfoClt.tipoDocumento 	= COALESCE(rCustInfo.DOC_TYPE,'');
+					SET rInfoClt.numDocumento 	= COALESCE(rCustInfo.DOC_NUMBER,'');
+					SET rInfoClt.usuario 		= COALESCE(rCustInfo.USERID,'');
+					
+					SET rInfoLog.timestamp 		= CAST(CAST(InputRoot.Properties.CreationTime AS TIMESTAMP FORMAT 'yyyy-MM-dd HH:mm:ss.SSS zzz')AS CHARACTER FORMAT 'dd-MM-yyyy HH:mm:ss');
+					SET rInfoLog.logId 			= COALESCE(Environment.csif:Messaging.csif:MessageInfo.csif:MessageId,Environment.csif:Messaging.MessageInfo.MessageId);
+					SET rInfoLog.secuencia 		= '';
+					SET rInfoLog.backendDestino = '';
+				END IF;
+			ELSE
+				THROW USER EXCEPTION SEVERITY 3 MESSAGE 9999 VALUES('Logger Not Found');
+			END IF;
+		END IF;
+		
+		DECLARE message BLOB ASBITSTREAM(InputBody CCSID 819 ENCODING InputRoot.Properties.Encoding);
+		SET OutputRoot.XMLNSC.log:Log.mensaje = CAST(message AS CHARACTER CCSID 819 ENCODING InputRoot.Properties.Encoding);
+		
+		RETURN TRUE;
+	END;
+END MODULE;

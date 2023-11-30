@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI" xmlns:ComIbmCompute.msgnode="ComIbmCompute.msgnode" xmlns:ComIbmMQInput.msgnode="ComIbmMQInput.msgnode" xmlns:ComIbmMQOutput.msgnode="ComIbmMQOutput.msgnode" xmlns:ComIbmMQReply.msgnode="ComIbmMQReply.msgnode" xmlns:ComIbmTrace.msgnode="ComIbmTrace.msgnode" xmlns:ComIbmValidate.msgnode="ComIbmValidate.msgnode" xmlns:com_bpd_core_util_exception_CH_ATM_BuildFault.subflow="com/bpd/core/util/exception/CH_ATM_BuildFault.subflow" xmlns:com_bpd_core_util_logger_Log.subflow="com/bpd/core/util/logger/Log.subflow"
+    xmlns:com_cysce_core_channel_message_Initialize.subflow="com/cysce/core/channel/message/Initialize.subflow" xmlns:com_cysce_core_context_StoreContext.subflow="com/cysce/core/context/StoreContext.subflow" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:eflow="http://www.ibm.com/wbi/2005/eflow" xmlns:utility="http://www.ibm.com/wbi/2005/eflow_utility" nsURI="com/bpd/intf/mq/consultaproductos/consultaprestamos/ConsultaPrestamos_01.msgflow"
+    nsPrefix="com_bpd_intf_mq_consultaproductos_consultaprestamos_ConsultaPrestamos_01.msgflow">
+  <eClassifiers xmi:type="eflow:FCMComposite" name="FCMComposite_1">
+    <eSuperTypes href="http://www.ibm.com/wbi/2005/eflow#//FCMBlock"/>
+    <translation xmi:type="utility:TranslatableString" key="ConsultaPrestamos_01" bundleName="com/bpd/intf/mq/consultaproductos/consultaprestamos/ConsultaPrestamos_01" pluginId="ConsultaProductos"/>
+    <colorGraphic16 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/ConsultaProductos/icons/full/obj16/ConsultaPrestamos_01.gif"/>
+    <colorGraphic32 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/ConsultaProductos/icons/full/obj30/ConsultaPrestamos_01.gif"/>
+    <composition>
+      <nodes xmi:type="ComIbmValidate.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_1" location="347,220" domain="XMLNSC" checkDomain="true" validateMaster="contentAndValue" validateFailureAction="exceptionList">
+        <translation xmi:type="utility:ConstantString" string="Validate"/>
+      </nodes>
+      <nodes xmi:type="ComIbmMQOutput.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_2" location="549,268" queueName="CONSULTAPRODUCTOS.01" request="true" replyToQ="MQ.CONSULTAPRESTAMOS.01">
+        <translation xmi:type="utility:ConstantString" string="CONSULTAPRODUCTOS.01"/>
+      </nodes>
+      <nodes xmi:type="com_bpd_core_util_logger_Log.subflow:FCMComposite_1" xmi:id="FCMComposite_1_3" location="536,153" messageType="XML" componentType="AS400">
+        <translation xmi:type="utility:ConstantString" string="Log"/>
+      </nodes>
+      <nodes xmi:type="ComIbmMQInput.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_5" location="59,145" queueName="CONSULTAPRESTAMOS.RQ" messageDomainProperty="XMLNSC" validateFailureAction="exceptionList">
+        <translation xmi:type="utility:ConstantString" string="CONSULTAPRESTAMOS.RQ"/>
+      </nodes>
+      <nodes xmi:type="ComIbmMQReply.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_7" location="616,153">
+        <translation xmi:type="utility:ConstantString" string="MQ Reply"/>
+      </nodes>
+      <nodes xmi:type="ComIbmTrace.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_8" location="182,84" destination="localError" pattern="Current Timestamp: ${CURRENT_TIMESTAMP}&#xD;&#xA;Broker: ${BrokerName}  Version: ${BrokerVersion}  Platform: ${Family}&#xD;&#xA;ProcessID: ${ProcessId}  BrokerUserId: ${BrokerUserId}&#xD;&#xA;ExecutionGroupLabel: ${ExecutionGroupLabel}&#xD;&#xA;Root: ${Root}&#xD;&#xA;Environment: ${Environment}&#xD;&#xA;ExceptionList: ${ExceptionList}">
+        <translation xmi:type="utility:ConstantString" string="Trace"/>
+      </nodes>
+      <nodes xmi:type="com_bpd_core_util_logger_Log.subflow:FCMComposite_1" xmi:id="FCMComposite_1_9" location="270,220" messageType="XML" componentType="AS400">
+        <translation xmi:type="utility:ConstantString" string="Log1"/>
+      </nodes>
+      <nodes xmi:type="com_cysce_core_context_StoreContext.subflow:FCMComposite_1" xmi:id="FCMComposite_1_10" location="777,272" queueName="CSIF.CORE.CHANNEL.STORE">
+        <translation xmi:type="utility:ConstantString" string="StoreContext"/>
+      </nodes>
+      <nodes xmi:type="com_cysce_core_channel_message_Initialize.subflow:FCMComposite_1" xmi:id="FCMComposite_1_11" location="194,220" Service="ConsultaProductos" Operation="ConsultaPrestamos">
+        <translation xmi:type="utility:ConstantString" string="Initialize"/>
+      </nodes>
+      <nodes xmi:type="ComIbmCompute.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_12" location="419,267" dataSource="BITACORAESB" computeExpression="esql://routine/com.bpd.intf.mq.consultaproductos.consultaprestamos#ConsultaPrestamos_01_MapConsultaPrestamo.Main">
+        <translation xmi:type="utility:ConstantString" string="MapConsultaPrestamo"/>
+      </nodes>
+      <nodes xmi:type="com_bpd_core_util_exception_CH_ATM_BuildFault.subflow:FCMComposite_1" xmi:id="FCMComposite_1_6" location="380,153" Servicio="ConsultaPrestamos">
+        <translation xmi:type="utility:ConstantString" string="CH_ATM_BuildFault"/>
+      </nodes>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_3" targetNode="FCMComposite_1_1" sourceNode="FCMComposite_1_9" sourceTerminalName="OutTerminal.Output" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_5" targetNode="FCMComposite_1_9" sourceNode="FCMComposite_1_11" sourceTerminalName="OutTerminal.Output" targetTerminalName="InTerminal.Input"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_6" targetNode="FCMComposite_1_10" sourceNode="FCMComposite_1_2" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.Input"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_9" targetNode="FCMComposite_1_11" sourceNode="FCMComposite_1_5" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.Input"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_10" targetNode="FCMComposite_1_8" sourceNode="FCMComposite_1_5" sourceTerminalName="OutTerminal.failure" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_11" targetNode="FCMComposite_1_7" sourceNode="FCMComposite_1_3" sourceTerminalName="OutTerminal.Output" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_12" targetNode="FCMComposite_1_2" sourceNode="FCMComposite_1_12" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_13" targetNode="FCMComposite_1_12" sourceNode="FCMComposite_1_1" sourceTerminalName="OutTerminal.match" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_2" targetNode="FCMComposite_1_6" sourceNode="FCMComposite_1_5" sourceTerminalName="OutTerminal.catch" targetTerminalName="InTerminal.Input"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_4" targetNode="FCMComposite_1_6" sourceNode="FCMComposite_1_1" sourceTerminalName="OutTerminal.failure" targetTerminalName="InTerminal.Input"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_14" targetNode="FCMComposite_1_3" sourceNode="FCMComposite_1_6" sourceTerminalName="OutTerminal.Output" targetTerminalName="InTerminal.Input"/>
+    </composition>
+    <propertyOrganizer/>
+    <stickyBoard/>
+  </eClassifiers>
+</ecore:EPackage>

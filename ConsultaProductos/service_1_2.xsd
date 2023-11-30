@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://bpd.com.do/comun/ESBException" xmlns:bpd="http://bpd.com.do/comun/ESBException" xmlns:ibmSchExtn="http://www.ibm.com/schema/extensions">
+  <xsd:annotation>
+    <xsd:documentation>Mensaje estandar para notificacion de errores en la
+			capa de integracion</xsd:documentation>
+  </xsd:annotation>
+  <xsd:element name="Error" type="bpd:ESBExcepcionType"/>
+  <xsd:element ibmSchExtn:docRoot="true" name="ESBExcepcion" type="bpd:ESBExcepcionType"/>
+  <xsd:complexType name="ESBExcepcionType">
+    <xsd:sequence>
+      <xsd:element maxOccurs="1" minOccurs="1" name="codigo" nillable="false" type="xsd:string">
+        <xsd:annotation>
+          <xsd:documentation>codigo de error, definir durante el diseno</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="1" name="descripcion" nillable="false" type="xsd:string">
+        <xsd:annotation>
+          <xsd:documentation>descripcion del error, definir durante el diseno</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="rastro" type="xsd:string">
+        <xsd:annotation>
+          <xsd:documentation>trace completo del error</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="actor" type="xsd:string">
+        <xsd:annotation>
+          <xsd:documentation>backend que genero el error</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="compensacion" type="xsd:string">
+        <xsd:annotation>
+          <xsd:documentation>en el contexto de bpm, es el evento que se dispara cuando se genera este error.
+puede usarse para definir un plan de contingencia</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+</xsd:schema>
