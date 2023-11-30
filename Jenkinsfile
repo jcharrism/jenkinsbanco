@@ -5,14 +5,19 @@ pipeline {
         stage('Build BAR') {
             steps {
                 bat """
-                    cd C:\\Program Files\\IBM\\ACE\\12.0.5.0
+                    dir
+                    ibmint package --input-path C:\ConsultaProductos --output-bar-file C:\ConsultaProductos\bar\ConsultaProductos.bar
                     dir
                 """
             }
         }
-        stage('Test') {
+        stage('VErificar BAR') {
             steps {
-                echo 'Testing..'
+                 bat """
+                    dir
+                    cd C:\\ConsultaProductos\\bar 
+                    dir                    
+                """
             }
         }
         stage('Deploy') {
