@@ -6,12 +6,12 @@ pipeline {
             steps {
                 bat """
                     dir
-                    ibmint package --input-path C:\\ConsultaProductos --output-bar-file C:\\ConsultaProductos\\bar\\ConsultaProductos.bar
+                    cd C:\\Program Files\\IBM\\ACE\\12.0.5.0 & ace.cmd &  ibmint package --input-path C:\\ConsultaProductos --output-bar-file C:\\ConsultaProductos\\bar\\ConsultaProductos.bar
                     dir
                 """
             }
         }
-        stage('VErificar BAR') {
+        stage('Verificar BAR') {
             steps {
                  bat """
                     dir
