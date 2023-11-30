@@ -6,7 +6,7 @@ pipeline {
             steps {
                 bat """
                     dir
-                    ibmint package --input-path C:\ConsultaProductos --output-bar-file C:\ConsultaProductos\bar\ConsultaProductos.bar
+                    ibmint package --input-path C:\\ConsultaProductos --output-bar-file C:\\ConsultaProductos\\bar\\ConsultaProductos.bar
                     dir
                 """
             }
