@@ -31,6 +31,9 @@ pipeline {
         }
         stage('Valores Archivo propiedades') {
             steps {
+                script{
+					readProp = readProperties file: 'parametros.properties'
+				}
                 echo 'Deploying....'
 				echo "This is runing on ${readProp['library']}"
 				echo "This is runing on ${readProp['input-path']}"
