@@ -1,16 +1,21 @@
 pipeline {
     agent any
+	
+	
 
     stages {
+	
+	
         stage('Build BAR') {
             steps {
-                script{
+				script{
 					readProp = readProperties file: 'parametros.properties'
 				}
-				echo "This is runing on ${readProp['output-bar-file']}"
+			
+				
                 bat """
                     dir
-                    cd C:\\Program Files\\IBM\\ACE\\12.0.5.0 & ace.cmd &  ibmint package --input-path C:\\ConsultaProductos --output-bar-file C:\\ConsultaProductos\\bar\\ConsultaProductos.bar
+                    cd C:\\Program Files\\IBM\\ACE\\12.0.5.0 & ace.cmd &  ibmint package --input-path ${props["input-path"]} --output-bar-file ${props["output-bar-file"]}
                     dir
                 """
             }
@@ -19,14 +24,18 @@ pipeline {
             steps {
                  bat """
                     dir
-                    cd C:\\ConsultaProductos\\bar 
+                    cd ${props["verificar-bar"]}
                     dir                    
                 """
             }
         }
-        stage('Deploy') {
+        stage('Valores Archivo propiedades') {
             steps {
                 echo 'Deploying....'
+				echo "This is runing on ${readProp['library']}"
+				echo "This is runing on ${readProp['input-path']}"
+				echo "This is runing on ${readProp['output-bar-file']}"
+				echo "This is runing on ${readProp['verificar-bar']}"
             }
         }
     }
