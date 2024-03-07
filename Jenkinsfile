@@ -17,9 +17,16 @@ pipeline {
 				echo "This is runing on ${readProp['verificar-bar']}"
 				
                 bat """
-                    dir
-                    cd C:\\Program Files\\IBM\\ACE\\12.0.5.0 & ace.cmd &  ibmint package --input-path ${readProp["input-path"]} --output-bar-file ${readProp["output-bar-file"]}
-                    dir
+                    mkdir bar
+		    docker build -t ace --build-arg DOWNLOAD_URL=https://public.dhe.ibm.com/ibmdl/export/pub/software/websphere/integration/12.0.4.0-ACE-LINUX64-DEVELOPER.tar.gz --file ./Dockerfile .
+                    docker run -d --name acebar -p 7600:7600 -p 7800:7800 -e LICENSE=accept ace:latest
+		    docker container ls
+                    docker exec -u 0 acebar  whoami
+		    docker exec acebar bash -c "cd /home/aceuser/build ; ls "
+      		    docker exec -t acebar bash  -c "cd home/aceuser ; . /opt/ibm/ace-12/server/bin/mqsiprofile ; ibmint package --input-path /home/aceuser/build --output-bar-file /home/aceuser/bar/CuentasCOMAPI.bar --trace ibmint-trace.txt "
+		    docker exec acebar bash -c "cd /home/aceuser/bar ; ls "
+      		    docker cp acebar:/home/aceuser/bar/CuentasCOMAPI.bar ./bar
+     		    docker stop acebar
                 """
             }
         }
