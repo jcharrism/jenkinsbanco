@@ -51,5 +51,10 @@ pipeline {
 				echo "This is runing on ${readProp['verificar-bar']}"
             }
         }
+  post {
+        cleanup {
+             echo 'Cleaning Workspace'
+             cleanWs()
+        }
     }
 }
